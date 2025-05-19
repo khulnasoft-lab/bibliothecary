@@ -21,6 +21,7 @@ module Bibliothecary
         }
       end
 
+      add_multi_parser(Bibliothecary::MultiParsers::CycloneDX)
       add_multi_parser(Bibliothecary::MultiParsers::DependenciesCSV)
 
       def self.parse_json_manifest(file_contents, options: {})

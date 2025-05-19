@@ -103,6 +103,7 @@ module Bibliothecary
       end
 
       def self.parse_glide_yaml(file_contents, options: {})
+<<<<<<< HEAD
         manifest = YAML.load file_contents
         map_dependencies(manifest, "import", "package", "version", "runtime", options.fetch(:filename, nil)) +
           map_dependencies(manifest, "devImports", "package", "version", "development", options.fetch(:filename, nil))
@@ -112,6 +113,16 @@ module Bibliothecary
         # glide.lock files contain an "updated" Time field, but Ruby 3.2+ requires us to safelist that class
         manifest = YAML.load file_contents, permitted_classes: [Time]
         map_dependencies(manifest, "imports", "name", "version", "runtime", options.fetch(:filename, nil))
+=======
+        manifest = YAML.load file_contents, permitted_classes: [Time]
+        map_dependencies(manifest, 'import', 'package', 'version', 'runtime') +
+        map_dependencies(manifest, 'devImports', 'package', 'version', 'development')
+      end
+
+      def self.parse_glide_lockfile(file_contents, options: {})
+        manifest = YAML.load file_contents, permitted_classes: [Time]
+        map_dependencies(manifest, 'imports', 'name', 'version', 'runtime')
+>>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
       end
 
       def self.parse_gb_manifest(file_contents, options: {})
@@ -162,7 +173,11 @@ module Bibliothecary
         file_contents
           .lines
           .map(&:strip)
+<<<<<<< HEAD
           .grep_v(/^#{GOMOD_COMMENT_REGEXP}/) # ignore comment lines
+=======
+          .reject { |line| line =~ /^#{GOMOD_COMMENT_REGEXP}/ } # ignore comment lines
+>>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
           .each do |line|
             if line.match(GOMOD_MULTILINE_END_REGEXP) # detect the end of a multiline
               current_multiline_category = nil
@@ -237,8 +252,12 @@ module Bibliothecary
             requirement: replacement_match[:requirement],
             type: "runtime",
             direct: !match[:indirect],
+<<<<<<< HEAD
             source: source
           )
+=======
+          }
+>>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
         when "retract"
           Dependency.new(
             name: match[:name],
@@ -246,16 +265,24 @@ module Bibliothecary
             type: "runtime",
             deprecated: true,
             direct: !match[:indirect],
+<<<<<<< HEAD
             source: source
           )
+=======
+          }
+>>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
         else
           Dependency.new(
             name: match[:name],
             requirement: match[:requirement],
             type: "runtime",
             direct: !match[:indirect],
+<<<<<<< HEAD
             source: source
           )
+=======
+          }
+>>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
         end
       end
     end

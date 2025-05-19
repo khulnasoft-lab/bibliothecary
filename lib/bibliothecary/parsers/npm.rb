@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 # frozen_string_literal: true
 
 require "json"
+=======
+require 'json'
+require 'yaml'
+>>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
 
 module Bibliothecary
   module Parsers
@@ -29,8 +34,12 @@ module Bibliothecary
             parser: :parse_pnpm_lock,
           },
           match_filename("npm-ls.json") => {
-            kind: "lockfile",
-            parser: :parse_ls,
+            kind: 'lockfile',
+            parser: :parse_ls
+          },
+          match_filename("pnpm-lock.yaml") => {
+            kind: 'lockfile',
+            parser: :parse_pnpm_lock
           },
           match_filename("npm-shrinkwrap.json") => {
             kind: "lockfile",
@@ -80,6 +89,7 @@ module Bibliothecary
           #      * The other occurrence's name is the path to the local dependency (which has less information, and is duplicative, so we discard)
           .select { |name, _dep| name.start_with?("node_modules") }
           .map do |name, dep|
+<<<<<<< HEAD
             # check if the name property is available and differs from the node modules location
             # this indicates that the package has been aliased
             node_module_name = name.split("node_modules/").last
@@ -100,6 +110,14 @@ module Bibliothecary
               local: dep.fetch("link", false),
               source: source
             )
+=======
+            {
+              name: name.split("node_modules/").last,
+              requirement: dep["version"] || "*",
+              type: dep.fetch("dev", false) || dep.fetch("devOptional", false)  ? "development" : "runtime",
+              local: dep.fetch("link", false),
+            }
+>>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
           end
       end
 
@@ -131,6 +149,7 @@ module Bibliothecary
 
         raise "appears to be a lockfile rather than manifest format" if manifest.key?("lockfileVersion")
 
+<<<<<<< HEAD
         dependencies = manifest.fetch("dependencies", [])
           .reject { |name, _requirement| name.start_with?("//") } # Omit comment keys. They are valid in package.json: https://groups.google.com/g/nodejs/c/NmL7jdeuw0M/m/yTqI05DRQrIJ
           .map do |name, requirement|
@@ -168,6 +187,20 @@ module Bibliothecary
 
         dependencies
       end
+=======
+        (
+          map_dependencies(manifest, "dependencies", "runtime") +
+          map_dependencies(manifest, "devDependencies", "development")
+        )
+          .reject { |dep| dep[:name].start_with?("//") } # Omit comment keys. They are valid in package.json: https://groups.google.com/g/nodejs/c/NmL7jdeuw0M/m/yTqI05DRQrIJ
+          .each do |dep|
+            dep[:local] = dep[:requirement].start_with?("file:")
+          end
+      end
+
+      def self.parse_yarn_lock(file_contents, options: {})
+        response = Typhoeus.post("#{Bibliothecary.configuration.yarn_parser_host}/parse", body: file_contents, timeout: 60)
+>>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
 
       def self.parse_yarn_lock(file_contents, options: {})
         dep_hash = if file_contents.match(/__metadata:/)
@@ -181,11 +214,18 @@ module Bibliothecary
             name: dep[:name],
             original_name: dep[:original_name],
             requirement: dep[:version],
+<<<<<<< HEAD
             original_requirement: dep[:original_requirement],
             type: "runtime", # lockfile doesn't tell us more about the type of dep
             local: dep[:requirements]&.first&.start_with?("file:"),
             source: options.fetch(:filename, nil)
           )
+=======
+            lockfile_requirement: dep[:requirement],
+            type: dep[:type],
+            local: dep[:requirement]&.start_with?("file:"),
+          }
+>>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
         end
       end
 
@@ -421,6 +461,26 @@ module Bibliothecary
             local: is_local,
             source: source
           )
+        end
+      end
+
+      def self.parse_pnpm_lock(file_contents, options: {})
+        manifest = YAML.safe_load(file_contents)
+        manifest.fetch('packages', []).map do |identifier, metadata|
+          parts = identifier.split('/')
+          if parts[0].start_with?('@')
+            name = parts[1..2].join('/')
+            version = parts[3]
+          else
+            name = parts[1]
+            version = parts[2]
+          end
+
+          {
+            name: name,
+            requirement: version,
+            type: metadata.fetch("dev", false) ? "development" : "runtime"
+          }
         end
       end
 

@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 # frozen_string_literal: true
 
+=======
+require "bundler"
+>>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
 require "gemnasium/parser"
 
 module Bibliothecary
@@ -36,6 +40,7 @@ module Bibliothecary
       add_multi_parser(Bibliothecary::MultiParsers::DependenciesCSV)
       add_multi_parser(Bibliothecary::MultiParsers::Spdx)
 
+<<<<<<< HEAD
       def self.parse_gemfile_lock(file_contents, options: {})
         file_contents.lines(chomp: true).map do |line|
           match = line.match(NAME_VERSION_4)
@@ -55,6 +60,29 @@ module Bibliothecary
             parse_bundler(file_contents, options.fetch(:filename, nil))
           end
         end.compact
+=======
+      def self.parse_gemfile_lock(file_contents, options: {}) # rubocop:disable Lint/UnusedMethodArgument
+        lockfile = Bundler::LockfileParser.new(file_contents)
+      
+        dependencies = lockfile.specs.map do |spec|
+          {
+            name: spec.name,
+            requirement: spec.version.to_s,
+            type: "runtime",
+          }
+        end
+      
+        bundler_version = lockfile.bundler_version
+        if bundler_version
+          dependencies << {
+            name: "bundler",
+            requirement: bundler_version.to_s,
+            type: "runtime",
+          }
+        end
+      
+        dependencies
+>>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
       end
 
       def self.parse_gemfile(file_contents, options: {})

@@ -41,12 +41,30 @@ module Bibliothecary
         # (channel(/subdir):(namespace):)name(version(build))[key1=value1,key2=value2]
         return if matchspec.end_with?("@")
 
+<<<<<<< HEAD
         # strip off comments and optional features
         matchspec = matchspec.split("#", 2).first
         matchspec = matchspec.split(" if ", 2).first
 
         # strip off brackets
         matchspec = matchspec.match(/^(.*)(?:\[(.*)\])?$/)[1]
+=======
+      private_class_method def self.call_conda_parser_web(file_contents, kind)
+        host = Bibliothecary.configuration.conda_parser_host
+        response = Typhoeus.post(
+          "#{host}/parse",
+          headers: {
+            ContentType: "multipart/form-data",
+          },
+          body: {
+            file: file_contents,
+            # Unfortunately we do not get the filename in the mapping parsers, so hardcoding the file name depending on the kind
+            filename: kind == "manifest" ? "environment.yml" : "environment.yml.lock",
+          },
+          timeout: 60
+        )
+        raise Bibliothecary::RemoteParsingError.new("Http Error #{response.response_code} when contacting: #{host}/parse", response.response_code) unless response.success?
+>>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
 
         # strip off any parens
         matchspec = matchspec.match(/^(.*)(?:(\(.*\)))?$/)[1]

@@ -330,6 +330,69 @@ describe Bibliothecary::Parsers::Pypi do
                                                                                           })
   end
 
+  it "parses dependencies from pip-dependency-graph.json" do
+    expect(described_class.analyse_contents("pip-dependency-graph.json", load_fixture("pip-dependency-graph.json"))).to eq({
+      platform: "pypi",
+      path: "pip-dependency-graph.json",
+      dependencies: [
+        { name: "aiohttp", requirement: "3.9.5", type: "runtime" },
+        { name: "aiosignal", requirement: "1.3.1", type: "runtime" },
+        { name: "async-timeout", requirement: "4.0.3", type: "runtime" },
+        { name: "attrs", requirement: "23.2.0", type: "runtime" },
+        { name: "black", requirement: "23.12.0", type: "runtime" },
+        { name: "click", requirement: "8.1.7", type: "runtime" },
+        { name: "frozenlist", requirement: "1.4.1", type: "runtime" },
+        { name: "idna", requirement: "3.7", type: "runtime" },
+        { name: "multidict", requirement: "6.0.5", type: "runtime" },
+        { name: "mypy-extensions", requirement: "1.0.0", type: "runtime" },
+        { name: "packaging", requirement: "24.0", type: "runtime" },
+        { name: "pathspec", requirement: "0.12.1", type: "runtime" },
+        { name: "platformdirs", requirement: "4.2.2", type: "runtime" },
+        { name: "termcolor", requirement: "2.4.0", type: "runtime" },
+        { name: "tomli", requirement: "2.0.1", type: "runtime" },
+        { name: "typing_extensions", requirement: "4.12.0", type: "runtime" },
+        { name: "yarl", requirement: "1.9.4", type: "runtime" },
+      ],
+      kind: "lockfile",
+      success: true,
+    })
+  end
+
+
+  it "handles duplicate dependencies from pip-dependency-graph.json" do
+    # It doesn't seem possible that pipdeptree would output duplicate
+    # dependencies, but this ensures we catch it in case that is possible.
+    lockfile = <<-JSON
+    [
+      {
+        "package": {
+          "key": "aiohttp",
+          "package_name": "aiohttp",
+          "installed_version": "3.9.5"
+        },
+        "dependencies": []
+      },
+      {
+        "package": {
+          "key": "aiohttp",
+          "package_name": "aiohttp",
+          "installed_version": "3.9.5"
+        },
+        "dependencies": []
+      }
+    ]    
+    JSON
+    expect(described_class.analyse_contents("pip-dependency-graph.json", lockfile)).to eq({
+      platform: "pypi",
+      path: "pip-dependency-graph.json",
+      dependencies: [
+        { name: "aiohttp", requirement: "3.9.5", type: "runtime" },
+      ],
+      kind: "lockfile",
+      success: true,
+    })
+  end
+
   it "parses dependencies from requirements.frozen" do
     expect(described_class.analyse_contents("requirements.frozen", load_fixture("requirements.frozen"))).to eq({
                                                                                                                  platform: "pypi",
@@ -502,5 +565,52 @@ describe Bibliothecary::Parsers::Pypi do
                                                                                                  kind: "lockfile",
                                                                                                  success: true,
                                                                                                })
+  end
+
+  it "parses dependencies from uv.lock" do
+    expect(described_class.analyse_contents("uv.lock", load_fixture("uv.lock"))).to eq({
+      platform: "pypi",
+      path: "uv.lock",
+      dependencies: [
+        { name: "alabaster", requirement: "0.7.16", type: "runtime" },
+        { name: "babel", requirement: "2.16.0", type: "runtime" },
+        { name: "beautifulsoup4", requirement: "4.12.3", type: "runtime" },
+        { name: "certifi", requirement: "2024.8.30", type: "runtime" },
+        { name: "charset-normalizer", requirement: "3.4.0", type: "runtime" },
+        { name: "colorama", requirement: "0.4.6", type: "runtime" },
+        { name: "docutils", requirement: "0.21.2", type: "runtime" },
+        { name: "exceptiongroup", requirement: "1.2.2", type: "runtime" },
+        { name: "ftfy", requirement: "6.3.1", type: "runtime" },
+        { name: "furo", requirement: "2024.8.6", type: "runtime" },
+        { name: "idna", requirement: "3.10", type: "runtime" },
+        { name: "imagesize", requirement: "1.4.1", type: "runtime" },
+        { name: "importlib-metadata", requirement: "8.5.0", type: "runtime" },
+        { name: "iniconfig", requirement: "2.0.0", type: "runtime" },
+        { name: "jinja2", requirement: "3.1.4", type: "runtime" },
+        { name: "markupsafe", requirement: "3.0.1", type: "runtime" },
+        { name: "packaging", requirement: "24.1", type: "runtime" },
+        { name: "pluggy", requirement: "1.5.0", type: "runtime" },
+        { name: "pygments", requirement: "2.18.0", type: "runtime" },
+        { name: "pytest", requirement: "8.3.3", type: "runtime" },
+        { name: "requests", requirement: "2.32.3", type: "runtime" },
+        { name: "ruff", requirement: "0.6.9", type: "runtime" },
+        { name: "snowballstemmer", requirement: "2.2.0", type: "runtime" },
+        { name: "soupsieve", requirement: "2.6", type: "runtime" },
+        { name: "sphinx", requirement: "7.4.7", type: "runtime" },
+        { name: "sphinx-basic-ng", requirement: "1.0.0b2", type: "runtime" },
+        { name: "sphinxcontrib-applehelp", requirement: "2.0.0", type: "runtime" },
+        { name: "sphinxcontrib-devhelp", requirement: "2.0.0", type: "runtime" },
+        { name: "sphinxcontrib-htmlhelp", requirement: "2.1.0", type: "runtime" },
+        { name: "sphinxcontrib-jsmath", requirement: "1.0.1", type: "runtime" },
+        { name: "sphinxcontrib-qthelp", requirement: "2.0.0", type: "runtime" },
+        { name: "sphinxcontrib-serializinghtml", requirement: "2.0.0", type: "runtime" },
+        { name: "tomli", requirement: "2.0.2", type: "runtime" },
+        { name: "urllib3", requirement: "2.2.3", type: "runtime" },
+        { name: "wcwidth", requirement: "0.2.13", type: "runtime" },
+        { name: "zipp", requirement: "3.20.2", type: "runtime" }
+      ],
+      kind: "lockfile",
+      success: true
+    })
   end
 end

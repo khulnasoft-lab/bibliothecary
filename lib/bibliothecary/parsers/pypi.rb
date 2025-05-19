@@ -13,7 +13,11 @@ module Bibliothecary
       REQUIRE_REGEXP = /([a-zA-Z0-9]+[a-zA-Z0-9\-_\.]+)(?:\[.*?\])*([><=\w\.,]+)?/
       REQUIREMENTS_REGEXP = /^#{REQUIRE_REGEXP}/
 
+<<<<<<< HEAD
       MANIFEST_REGEXP = /.*require[^\/]*\.(txt|pip|in)$/
+=======
+      MANIFEST_REGEXP = /.*require[^\/]*(\/)?[^\/]*\.(txt|pip|in)$/
+>>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
       # TODO: can this be a more specific regexp so it doesn't match something like ".yarn/cache/create-require-npm-1.0.0.zip"?
       PIP_COMPILE_REGEXP = /.*require.*$/
 
@@ -81,6 +85,21 @@ module Bibliothecary
             parser: :parse_conda,
             kind: "manifest",
           },
+<<<<<<< HEAD
+=======
+          match_filename("environment.yml.lock") => {
+            parser: :parse_conda,
+            kind: "lockfile",
+          },
+          match_filename("environment.yaml.lock") => {
+            parser: :parse_conda,
+            kind: "lockfile",
+          },
+          match_filename("uv.lock") => {
+            parser: :parse_uv_lock,
+            kind: "lockfile"
+          }
+>>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
         }
       end
 
@@ -221,7 +240,22 @@ module Bibliothecary
         deps
       end
 
+<<<<<<< HEAD
       def self.parse_setup_py(file_contents, options: {})
+=======
+      def self.parse_uv_lock(file_contents, options: {}) # rubocop:disable Lint/UnusedMethodArgument
+        manifest = Tomlrb.parse(file_contents)
+        manifest.fetch("package", []).map do |package|
+          {
+            name: package["name"],
+            requirement: map_requirements(package),
+            type: "runtime", # All dependencies are considered runtime
+          }
+        end
+      end
+
+      def self.parse_setup_py(file_contents, options: {}) # rubocop:disable Lint/UnusedMethodArgument
+>>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
         match = file_contents.match(INSTALL_REGEXP)
         return [] unless match
 
@@ -251,12 +285,20 @@ module Bibliothecary
       def self.parse_dependency_tree_json(file_contents, options: {})
         JSON.parse(file_contents)
           .map do |pkg|
+<<<<<<< HEAD
             Dependency.new(
               name: pkg.dig("package", "package_name"),
               requirement: pkg.dig("package", "installed_version"),
               type: "runtime",
               source: options.fetch(:filename, nil)
             )
+=======
+            {
+                name: pkg.dig("package", "package_name"),
+                requirement: pkg.dig("package", "installed_version"),
+                type: "runtime",
+              }
+>>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
           end
           .uniq
       end
@@ -284,9 +326,17 @@ module Bibliothecary
               next
             end
 
+<<<<<<< HEAD
             deps << result
           elsif (match = line.delete(" ").match(REQUIREMENTS_REGEXP))
             deps << Dependency.new(
+=======
+            deps << result.merge(
+              type: type
+            )
+          elsif (match = line.delete(" ").match(REQUIREMENTS_REGEXP))
+            deps << {
+>>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
               name: match[1],
               requirement: match[-1],
               type: type,

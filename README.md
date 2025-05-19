@@ -1,9 +1,10 @@
 # Bibliothecary
 
-Dependency manifest parsing library for https://libraries.io
+Dependency manifest parsing library for https://github.com/khulnasoft-lab 
 
-[![Build Status](https://travis-ci.org/librariesio/bibliothecary.svg?branch=master)](https://travis-ci.org/librariesio/bibliothecary)
-[![license](https://img.shields.io/github/license/librariesio/bibliothecary.svg)](https://github.com/librariesio/bibliothecary/blob/master/LICENSE.txt)
+This is a maintained fork of the original [Bibliothecary](https://github.com/librariesio/bibliothecary) gem, with support for additional manifest formats and bug fixes.
+
+[![license](https://img.shields.io/github/license/khulnasoft-lab/bibliothecary.svg)](https://github.com/khulnasoft-lab/bibliothecary/blob/master/LICENSE.txt)
 
 ## Installation
 
@@ -12,16 +13,12 @@ Requires Ruby 3.0 or above.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'bibliothecary'
+gem "bibliothecary", git: "https://github.com/khulnasoft-lab/bibliothecary.git"
 ```
 
 And then execute:
 
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install bibliothecary
+    $ bundle install
 
 ## Usage
 
@@ -51,7 +48,7 @@ Bibliothecary.configure do |config|
 end
 ```
 
-All available config options are in: https://github.com/librariesio/bibliothecary/blob/master/lib/bibliothecary/configuration.rb
+All available config options are in: https://github.com/khulnasoft-lab/bibliothecary/blob/master/lib/bibliothecary/configuration.rb
 
 ## Supported package manager file formats
 
@@ -60,6 +57,7 @@ All available config options are in: https://github.com/librariesio/bibliothecar
   - package-lock.json
   - npm-shrinkwrap.json
   - yarn.lock
+  - pnpm-lock.yaml
 - Maven
   - pom.xml
   - ivy.xml
@@ -84,6 +82,7 @@ All available config options are in: https://github.com/librariesio/bibliothecar
   - Pipfile.lock
   - pyproject.toml
   - poetry.lock
+  - uv.lock
 - Nuget
   - packages.config
   - Project.json
@@ -128,6 +127,7 @@ All available config options are in: https://github.com/librariesio/bibliothecar
   - mix.lock
 - Swift
   - Package.swift
+  - Package.resolved
 - Pub
   - pubspec.yaml
   - pubspec.lock
@@ -164,6 +164,19 @@ All available config options are in: https://github.com/librariesio/bibliothecar
 - Hackage
   - \*.cabal
   - cabal.config
+- Actions
+  - action.yml
+  - action.yaml
+  - .github/workflows/*.yml
+  - .github/workflows/*.yaml
+- Docker
+  - Dockerfile
+  - docker-compose.yml
+- Vcpkg
+  - vcpkg.json
+- Homebrew
+  - Brewfile
+  - Brewfile.lock.json
 
 ## Development
 
@@ -178,4 +191,4 @@ To release a new version:
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/librariesio/bibliothecary. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/khulnasoft-lab/bibliothecary. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.

@@ -2,18 +2,201 @@ name: Upgrade Ruby
 
 on:
   workflow_dispatch:
+    inputs:
+      ruby_version:
+        description: 'Target Ruby version (optional - leave empty for latest)'
+        required: false
+        type: string
+      create_pr:
+        description: 'Create pull request'
+        required: false
+        default: true
+        type: boolean
   schedule:
-    - cron: "0 0 * * 0" # Runs weekly
+    - cron: "0 0 * * 0" # Runs weekly on Sunday
 
 permissions:
   contents: write
   pull-requests: write
+  actions: read
 
 jobs:
   upgrade-ruby:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: andrew/ruby-upgrade-action@main
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate inputs
+        run: |
+          if [ "${{ inputs.create_pr }}" = "false" ]; then
+            echo "create_pr=false" >> $GITHUB_OUTPUT
+            echo "PR creation disabled, will only check for updates"
+          else
+            echo "create_pr=true" >> $GITHUB_OUTPUT
+          fi
+        id: validate
+
+      - name: Check for existing upgrade PR
+        id: check-pr
+        run: |
+          set -e
+          existing_pr=$(gh pr list --state open --label "ruby-upgrade" --json number --jq '.[0].number // empty')
+          if [ -n "$existing_pr" ]; then
+            echo "existing_pr=$existing_pr" >> $GITHUB_OUTPUT
+            echo "Found existing Ruby upgrade PR #$existing_pr"
+          else
+            echo "existing_pr=" >> $GITHUB_OUTPUT
+            echo "No existing Ruby upgrade PR found"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+
+      - name: Check current Ruby version
+        id: current-ruby
+        run: |
+          if [ -f .ruby-version ]; then
+            current_version=$(cat .ruby-version)
+            echo "current_version=$current_version" >> $GITHUB_OUTPUT
+            echo "Current Ruby version: $current_version"
+          else
+            echo "No .ruby-version file found"
+            echo "current_version=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Determine target Ruby version
+        id: target-ruby
+        run: |
+          if [ -n "${{ inputs.ruby_version }}" ]; then
+            target_version="${{ inputs.ruby_version }}"
+          else
+            # Get latest stable Ruby version
+            target_version=$(curl -s https://api.github.com/repos/ruby/ruby/releases/latest | jq -r '.tag_name' | sed 's/v//')
+          fi
+          echo "target_version=$target_version" >> $GITHUB_OUTPUT
+          echo "Target Ruby version: $target_version"
+
+      - name: Check if upgrade needed
+        id: check-upgrade
+        run: |
+          current="${{ steps.current-ruby.outputs.current_version }}"
+          target="${{ steps.target-ruby.outputs.target_version }}"
+          
+          if [ "$current" = "$target" ]; then
+            echo "upgrade_needed=false" >> $GITHUB_OUTPUT
+            echo "Ruby is already at target version $target"
+          else
+            echo "upgrade_needed=true" >> $GITHUB_OUTPUT
+            echo "Ruby upgrade needed: $current -> $target"
+          fi
+
+      - name: Create upgrade branch
+        if: |
+          steps.check-upgrade.outputs.upgrade_needed == 'true' && 
+          steps.check-pr.outputs.existing_pr == '' && 
+          steps.validate.outputs.create_pr == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git checkout -b "automated/upgrade-ruby-${{ steps.target-ruby.outputs.target_version }}"
+
+      - name: Update Ruby version files
+        if: |
+          steps.check-upgrade.outputs.upgrade_needed == 'true' && 
+          steps.check-pr.outputs.existing_pr == '' && 
+          steps.validate.outputs.create_pr == 'true'
+        run: |
+          target_version="${{ steps.target-ruby.outputs.target_version }}"
+          
+          # Update .ruby-version
+          if [ -f .ruby-version ]; then
+            echo "$target_version" > .ruby-version
+            git add .ruby-version
+          fi
+          
+          # Update Gemfile if it specifies Ruby version
+          if [ -f Gemfile ] && grep -q "ruby ['\"]" Gemfile; then
+            sed -i "s/ruby ['\"][^'\"]*['\"]/ruby '$target_version'/" Gemfile
+            git add Gemfile
+          fi
+          
+          # Update GitHub Actions workflows if they use Ruby
+          find .github/workflows -name "*.yml" -o -name "*.yaml" | xargs grep -l "ruby-version:" | while read file; do
+            sed -i "s/ruby-version: ['\"][^'\"]*['\"]/ruby-version: '$target_version'/" "$file"
+            sed -i "s/ruby-version: [^'\" ][^ ]*/ruby-version: $target_version/" "$file"
+            git add "$file"
+          done
+
+      - name: Commit changes
+        if: |
+          steps.check-upgrade.outputs.upgrade_needed == 'true' && 
+          steps.check-pr.outputs.existing_pr == '' && 
+          steps.validate.outputs.create_pr == 'true'
+        run: |
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            echo "changes_made=false" >> $GITHUB_OUTPUT
+          else
+            git commit -m "chore: upgrade Ruby to ${{ steps.target-ruby.outputs.target_version }}"
+            git push origin "automated/upgrade-ruby-${{ steps.target-ruby.outputs.target_version }}"
+            echo "changes_made=true" >> $GITHUB_OUTPUT
+          fi
+        id: commit
+
+      - name: Create Pull Request
+        if: |
+          steps.check-upgrade.outputs.upgrade_needed == 'true' && 
+          steps.check-pr.outputs.existing_pr == '' && 
+          steps.validate.outputs.create_pr == 'true' &&
+          steps.commit.outputs.changes_made == 'true'
+        run: |
+          gh pr create \
+            --title "chore: upgrade Ruby to ${{ steps.target-ruby.outputs.target_version }}" \
+            --body "This PR was automatically created to upgrade Ruby from ${{ steps.current-ruby.outputs.current_version }} to ${{ steps.target-ruby.outputs.target_version }}.
+
+          ## Changes
+          - Updated Ruby version in relevant configuration files
+          - Updated .ruby-version file
+          - Updated Gemfile (if applicable)
+          - Updated GitHub Actions workflows (if applicable)
+
+          ## Next Steps
+          - [ ] Review the changes
+          - [ ] Ensure all tests pass
+          - [ ] Update dependencies if necessary
+          - [ ] Merge when ready
+
+          Created by: ${{ github.workflow }} workflow
+          Triggered by: ${{ github.event_name }}" \
+            --label "ruby-upgrade,dependencies,automated" \
+            --head "automated/upgrade-ruby-${{ steps.target-ruby.outputs.target_version }}" \
+            --base main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on existing PR
+        if: steps.check-pr.outputs.existing_pr != ''
+        run: |
+          gh pr comment ${{ steps.check-pr.outputs.existing_pr }} --body "Ruby upgrade workflow was triggered but an existing upgrade PR is already open. Skipping creation of new PR."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Report no upgrade needed
+        if: steps.check-upgrade.outputs.upgrade_needed == 'false'
+        run: |
+          echo "✅ Ruby is already at the target version ${{ steps.target-ruby.outputs.target_version }}"
+
+      - name: Handle errors
+        if: failure()
+        run: |
+          echo "❌ Ruby upgrade workflow failed. Check the logs above for details."
+          exit 1

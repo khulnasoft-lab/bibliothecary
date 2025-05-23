@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "yaml"
 
 module Bibliothecary
@@ -23,21 +21,20 @@ module Bibliothecary
       add_multi_parser(Bibliothecary::MultiParsers::CycloneDX)
       add_multi_parser(Bibliothecary::MultiParsers::DependenciesCSV)
 
-      def self.parse_yaml_manifest(file_contents, options: {})
+      def self.parse_yaml_manifest(file_contents, options: {}) # rubocop:disable Lint/UnusedMethodArgument
         manifest = YAML.load file_contents
-        map_dependencies(manifest, "dependencies", "runtime", options.fetch(:filename, nil)) +
-          map_dependencies(manifest, "dev_dependencies", "development", options.fetch(:filename, nil))
+        map_dependencies(manifest, "dependencies", "runtime") +
+        map_dependencies(manifest, "dev_dependencies", "development")
       end
 
-      def self.parse_yaml_lockfile(file_contents, options: {})
+      def self.parse_yaml_lockfile(file_contents, options: {}) # rubocop:disable Lint/UnusedMethodArgument
         manifest = YAML.load file_contents
         manifest.fetch("packages", []).map do |name, dep|
-          Dependency.new(
+          {
             name: name,
             requirement: dep["version"],
             type: "runtime",
-            source: options.fetch(:filename, nil)
-          )
+          }
         end
       end
     end

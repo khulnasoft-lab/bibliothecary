@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "spec_helper"
 
 describe Bibliothecary::MultiParsers::CycloneDX do
@@ -7,7 +5,7 @@ describe Bibliothecary::MultiParsers::CycloneDX do
 
   let!(:parser_class) do
     k = Class.new do
-      def platform_name = "whatever"
+      def platform_name; "whatever"; end
     end
 
     k.send(:include, described_class)
@@ -33,15 +31,15 @@ describe Bibliothecary::MultiParsers::CycloneDX do
   end
 
   it "handles unmapped json component" do
-    expect(parser.parse_cyclonedx_json(%({ "components": [{ "purl": "#{unmapped_component}" }] }))).to eq(nil)
+    expect(parser.parse_cyclonedx_json(%{{ "components": [{ "purl": "#{unmapped_component}" }] }})).to eq(nil)
   end
 
   it "handles unmapped xml component" do
-    expect(parser.parse_cyclonedx_xml(%(<?xml version="1.0" encoding="UTF-8"?><bom xmlns="http://cyclonedx.org/schema/bom/1.4"><components><component><purl>#{unmapped_component}</purl></component></components></bom>))).to eq(nil)
+    expect(parser.parse_cyclonedx_xml(%{<?xml version="1.0" encoding="UTF-8"?><bom xmlns="http://cyclonedx.org/schema/bom/1.4"><components><component><purl>#{unmapped_component}</purl></component></components></bom>})).to eq(nil)
   end
 
   it "handles no xml pragma" do
-    expect(parser.parse_cyclonedx_xml(%(<bom xmlns="http://cyclonedx.org/schema/bom/1.4"><components><component><purl>#{unmapped_component}</purl></component></components></bom>))).to eq(nil)
+    expect(parser.parse_cyclonedx_xml(%{<bom xmlns="http://cyclonedx.org/schema/bom/1.4"><components><component><purl>#{unmapped_component}</purl></component></components></bom>})).to eq(nil)
   end
 
   describe "ManifestEntries#parse!" do
@@ -58,16 +56,28 @@ describe Bibliothecary::MultiParsers::CycloneDX do
     end
   end
 
+  describe "ManifestEntries.full_name_for_purl" do
+    it "should handle formats correctly" do
+      maven = PackageURL.parse("pkg:maven/cat/dog@1.2.3")
+
+      expect(described_class::ManifestEntries.full_name_for_purl(maven)).to eq("cat:dog")
+
+      npm = PackageURL.parse("pkg:npm/cat/dog@1.2.3")
+
+      expect(described_class::ManifestEntries.full_name_for_purl(npm)).to eq("cat/dog")
+    end
+  end
+
   context "correct parsers implement it" do
-    Bibliothecary::PurlUtil::PURL_TYPE_MAPPING.each_value do |parser|
+    Bibliothecary::PURL_TYPE_MAPPING.each_value do |parser|
       constant_symbol = Bibliothecary::Parsers.constants.find { |c| c.to_s.downcase.gsub(/[^a-z]/, "") == parser.to_s.downcase.gsub(/[^a-z]/, "") }
       constant = Bibliothecary::Parsers.const_get(constant_symbol)
 
       # only analyzers have platform_name on the class
-      next unless constant.respond_to?(:platform_name)
-
-      it "#{constant_symbol} should implement CycloneDX" do
-        expect(constant.respond_to?(:parse_cyclonedx_xml)).to eq(true)
+      if constant.respond_to?(:platform_name)
+        it "#{constant_symbol} should implement CycloneDX" do
+          expect(constant.respond_to?(:parse_cyclonedx_xml)).to eq(true)
+        end
       end
     end
   end

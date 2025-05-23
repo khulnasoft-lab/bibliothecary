@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "json"
 
 module Bibliothecary
@@ -22,3 +20,4 @@ module Bibliothecary
     end
   end
 end
+

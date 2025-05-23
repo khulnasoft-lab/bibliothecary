@@ -6,8 +6,8 @@ require "bibliothecary/version"
 Gem::Specification.new do |spec|
   spec.name          = "bibliothecary"
   spec.version       = Bibliothecary::VERSION
-  spec.authors       = ["Andrew Nesbitt"]
-  spec.email         = ["andrewnez@gmail.com"]
+  spec.authors       = ["Md Sulaiman"]
+  spec.email         = ["dev.sulaiman@icloud.com"]
 
   spec.summary       = "Find and parse manifests"
   spec.homepage      = "https://github.com/khulnasoft-lab/bibliothecary"

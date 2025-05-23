@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "json"
 
 module Bibliothecary
@@ -24,15 +22,14 @@ module Bibliothecary
       add_multi_parser(Bibliothecary::MultiParsers::CycloneDX)
       add_multi_parser(Bibliothecary::MultiParsers::DependenciesCSV)
 
-      def self.parse_json_lock(file_contents, options: {})
+      def self.parse_json_lock(file_contents, options: {}) # rubocop:disable Lint/UnusedMethodArgument
         manifest = JSON.parse file_contents
         manifest.map do |name, requirement|
-          Dependency.new(
+          {
             name: name,
             requirement: requirement,
             type: "runtime",
-            source: options.fetch(:filename, nil)
-          )
+          }
         end
       end
     end

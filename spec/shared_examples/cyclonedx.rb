@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 RSpec.shared_examples "CycloneDX" do
   describe "CycloneDX" do
     # the sample cyclonedx files were created using the syft tool:
@@ -31,21 +29,18 @@ RSpec.shared_examples "CycloneDX" do
     end
 
     let(:dependencies_for_platform) do
-      artifactory_dependencies
-        .find_all { |d| d[:platform] == described_class.platform_name.to_sym }
-        .tap { |o| raise "This platform is not configured for testing with CycloneDX!" if o.empty? }
+      artifactory_dependencies.find_all { |d| d[:platform] == described_class.platform_name.to_sym }.tap { |o| raise "This platform is not configured for testing with CycloneDX!" unless o.length > 0 }
     end
 
     it "parses dependencies from cyclonedx.json" do
       result = described_class.analyse_contents("cyclonedx.json", load_fixture("cyclonedx.json"))
 
       dependencies_for_platform.each do |dependency|
-        expect(result[:dependencies].find { |d| d.name == dependency[:name] }).to eq(Bibliothecary::Dependency.new(
-                                                                                       name: dependency[:name],
-                                                                                       requirement: dependency[:version],
-                                                                                       type: "lockfile",
-                                                                                       source: "cyclonedx.json"
-                                                                                     ))
+        expect(result[:dependencies].find { |d| d[:name] == dependency[:name] }).to eq({
+          name: dependency[:name],
+          requirement: dependency[:version],
+          type: "lockfile",
+        })
       end
     end
 
@@ -53,12 +48,11 @@ RSpec.shared_examples "CycloneDX" do
       result = described_class.analyse_contents("cyclonedx.json", load_fixture("cyclonedx-nested.json"))
 
       dependencies_for_platform.each do |dependency|
-        expect(result[:dependencies].find { |d| d.name == dependency[:name] }).to eq(Bibliothecary::Dependency.new(
-                                                                                       name: dependency[:name],
-                                                                                       requirement: dependency[:version],
-                                                                                       type: "lockfile",
-                                                                                       source: "cyclonedx.json"
-                                                                                     ))
+        expect(result[:dependencies].find { |d| d[:name] == dependency[:name] }).to eq({
+          name: dependency[:name],
+          requirement: dependency[:version],
+          type: "lockfile",
+        })
       end
     end
 
@@ -66,12 +60,11 @@ RSpec.shared_examples "CycloneDX" do
       result = described_class.analyse_contents("cyclonedx.xml", load_fixture("cyclonedx.xml"))
 
       dependencies_for_platform.each do |dependency|
-        expect(result[:dependencies].find { |d| d.name == dependency[:name] }).to eq(Bibliothecary::Dependency.new(
-                                                                                       name: dependency[:name],
-                                                                                       requirement: dependency[:version],
-                                                                                       type: "lockfile",
-                                                                                       source: "cyclonedx.xml"
-                                                                                     ))
+        expect(result[:dependencies].find { |d| d[:name] == dependency[:name] }).to eq({
+          name: dependency[:name],
+          requirement: dependency[:version],
+          type: "lockfile",
+        })
       end
     end
 
@@ -79,29 +72,30 @@ RSpec.shared_examples "CycloneDX" do
       result = described_class.analyse_contents("cyclonedx.xml", load_fixture("cyclonedx-nested.xml"))
 
       dependencies_for_platform.each do |dependency|
-        expect(result[:dependencies].find { |d| d.name == dependency[:name] }).to eq(Bibliothecary::Dependency.new(
-                                                                                       name: dependency[:name],
-                                                                                       requirement: dependency[:version],
-                                                                                       type: "lockfile",
-                                                                                       source: "cyclonedx.xml"
-                                                                                     ))
+        expect(result[:dependencies].find { |d| d[:name] == dependency[:name] }).to eq({
+          name: dependency[:name],
+          requirement: dependency[:version],
+          type: "lockfile",
+        })
       end
     end
+
 
     context "with cache" do
       let(:options) { { cache: {} } }
 
       it "uses the cache for json" do
-        described_class.analyse_contents("cyclonedx.json", load_fixture("cyclonedx.json"), options:)
+        described_class.analyse_contents("cyclonedx.json", load_fixture("cyclonedx.json"), options: options)
 
         expect(options[:cache]["cyclonedx.json"]).not_to eq(nil)
       end
 
       it "uses the cache for xml" do
-        described_class.analyse_contents("cyclonedx.xml", load_fixture("cyclonedx.xml"), options:)
+        described_class.analyse_contents("cyclonedx.xml", load_fixture("cyclonedx.xml"), options: options)
 
         expect(options[:cache]["cyclonedx.xml"]).not_to eq(nil)
       end
     end
   end
 end
+

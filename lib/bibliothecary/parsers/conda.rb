@@ -1,6 +1,4 @@
-# frozen_string_literal: true
-
-require "yaml"
+require "json"
 
 module Bibliothecary
   module Parsers
@@ -17,6 +15,14 @@ module Bibliothecary
             parser: :parse_conda,
             kind: "manifest",
           },
+          match_filename("environment.yml.lock") => {
+            parser: :parse_conda_lockfile,
+            kind: "lockfile",
+          },
+          match_filename("environment.yaml.lock") => {
+            parser: :parse_conda_lockfile,
+            kind: "lockfile",
+          },
         }
       end
 
@@ -24,31 +30,19 @@ module Bibliothecary
       add_multi_parser(Bibliothecary::MultiParsers::DependenciesCSV)
       add_multi_parser(Bibliothecary::MultiParsers::Spdx)
 
-      def self.parse_conda(file_contents, options: {})
-        manifest = YAML.load(file_contents)
-        deps = manifest["dependencies"]
-        deps.map do |dep|
-          next unless dep.is_a? String # only deal with strings to skip parsing pip stuff
-
-          parsed = parse_name_requirement_from_matchspec(dep)
-          Dependency.new(**parsed, type: "runtime", source: options.fetch(:filename, nil))
-        end.compact
+      def self.parse_conda(file_contents, options: {}) # rubocop:disable Lint/UnusedMethodArgument
+        parse_conda_with_kind(file_contents, "manifest")
       end
 
-      def self.parse_name_requirement_from_matchspec(matchspec)
-        # simplified version of the implementation in conda to handle what we care about
-        # https://github.com/conda/conda/blob/main/conda/models/match_spec.py#L598
-        # (channel(/subdir):(namespace):)name(version(build))[key1=value1,key2=value2]
-        return if matchspec.end_with?("@")
+      def self.parse_conda_lockfile(file_contents, options: {}) # rubocop:disable Lint/UnusedMethodArgument
+        parse_conda_with_kind(file_contents, "lockfile")
+      end
 
-<<<<<<< HEAD
-        # strip off comments and optional features
-        matchspec = matchspec.split("#", 2).first
-        matchspec = matchspec.split(" if ", 2).first
+      def self.parse_conda_with_kind(info, kind)
+        dependencies = call_conda_parser_web(info, kind)[kind.to_sym]
+        dependencies.map { |dep| dep.merge(type: "runtime") }
+      end
 
-        # strip off brackets
-        matchspec = matchspec.match(/^(.*)(?:\[(.*)\])?$/)[1]
-=======
       private_class_method def self.call_conda_parser_web(file_contents, kind)
         host = Bibliothecary.configuration.conda_parser_host
         response = Typhoeus.post(
@@ -64,42 +58,8 @@ module Bibliothecary
           timeout: 60
         )
         raise Bibliothecary::RemoteParsingError.new("Http Error #{response.response_code} when contacting: #{host}/parse", response.response_code) unless response.success?
->>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
 
-        # strip off any parens
-        matchspec = matchspec.match(/^(.*)(?:(\(.*\)))?$/)[1]
-
-        # deal with channel and namespace, I wish there was rsplit in ruby
-        split = matchspec.reverse.split(":", 2)
-        matchspec = split.last.reverse
-
-        # split the name from the version/build combo
-        matches = matchspec.match(/([^ =<>!~]+)?([><!=~ ].+)?/)
-        name = matches[1]
-        version_build = matches[2]
-
-        version = nil
-        if matches && matches[2]
-          version_build = matches[2]
-          # and now deal with getting the version from version/build
-          matches = version_build.match(/((?:.+?)[^><!,|]?)(?:(?<![=!|,<>~])(?:[ =])([^-=,|<>~]+?))?$/)
-          version = if matches
-                      matches[1].strip
-                    else
-                      version_build.strip
-                    end
-        end
-        # if it's an exact requirement, lose the =
-        if version&.start_with?("==")
-          version = version[2..]
-        elsif version&.start_with?("=")
-          version = version[1..]
-        end
-
-        {
-          name: name,
-          requirement: version || "", # NOTE: this ignores build info
-        }
+        JSON.parse(response.body, symbolize_names: true)
       end
     end
   end

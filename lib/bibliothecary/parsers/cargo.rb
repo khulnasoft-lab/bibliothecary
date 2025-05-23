@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Bibliothecary
   module Parsers
     class Cargo
@@ -22,7 +20,7 @@ module Bibliothecary
       add_multi_parser(Bibliothecary::MultiParsers::Spdx)
       add_multi_parser(Bibliothecary::MultiParsers::DependenciesCSV)
 
-      def self.parse_manifest(file_contents, options: {})
+      def self.parse_manifest(file_contents, options: {}) # rubocop:disable Lint/UnusedMethodArgument
         manifest = Tomlrb.parse(file_contents)
 
         parsed_dependencies = []
@@ -32,30 +30,26 @@ module Bibliothecary
             if requirement.respond_to?(:fetch)
               requirement = requirement["version"] or next
             end
-
-            Dependency.new(
+            {
               name: name,
               requirement: requirement,
               type: index.zero? ? "runtime" : "development",
-              source: options.fetch(:filename, nil)
-            )
+            }
           end
         end
 
         parsed_dependencies.flatten.compact
       end
 
-      def self.parse_lockfile(file_contents, options: {})
+      def self.parse_lockfile(file_contents, options: {}) # rubocop:disable Lint/UnusedMethodArgument
         manifest = Tomlrb.parse(file_contents)
-        manifest.fetch("package", []).map do |dependency|
-          next if !dependency["source"] || !dependency["source"].start_with?("registry+")
-
-          Dependency.new(
+        manifest.fetch("package",[]).map do |dependency|
+          next if not dependency["source"] or not dependency["source"].start_with?("registry+")
+          {
             name: dependency["name"],
             requirement: dependency["version"],
             type: "runtime",
-            source: options.fetch(:filename, nil)
-          )
+          }
         end
           .compact
       end

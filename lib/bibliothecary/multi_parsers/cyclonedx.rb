@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "json"
 require "ox"
 
@@ -62,24 +60,23 @@ module Bibliothecary
           @parse_queue = parse_queue.dup
         end
 
-        def add(purl, source = nil)
-          mapping = PurlUtil::PURL_TYPE_MAPPING[purl.type]
+        def <<(purl)
+          mapping = Bibliothecary::PURL_TYPE_MAPPING[purl.type]
           return unless mapping
 
           @manifests[mapping] ||= Set.new
-          @manifests[mapping] << Dependency.new(
-            name: PurlUtil.full_name(purl),
+          @manifests[mapping] << {
+            name: self.class.full_name_for_purl(purl),
             requirement: purl.version,
             type: "lockfile",
-            source: source
-          )
+          }
         end
 
         # Iterates over each manifest entry in the parse_queue, and accepts a block which will
         # be called on each component. The block has two jobs: 1) add more sub-components
         # to parse (if they exist), and 2) return the components purl.
-        def parse!(source = nil, &block)
-          until @parse_queue.empty?
+        def parse!(&block)
+          while @parse_queue.length > 0
             component = @parse_queue.shift
 
             purl_text = block.call(component, @parse_queue)
@@ -88,12 +85,24 @@ module Bibliothecary
 
             purl = PackageURL.parse(purl_text)
 
-            add(purl, source)
+            self << purl
           end
         end
 
         def [](key)
           @manifests[key]&.to_a
+        end
+
+        # @return [String] The properly namespaced package name
+        def self.full_name_for_purl(purl)
+          parts = [purl.namespace, purl.name].compact
+
+          case purl.type
+          when "maven"
+            parts.join(":")
+          else
+            parts.join("/")
+          end
         end
       end
 
@@ -123,6 +132,7 @@ module Bibliothecary
       end
 
       def parse_cyclonedx_json(file_contents, options: {})
+
         manifest = try_cache(options, options[:filename]) do
           JSON.parse(file_contents)
         end
@@ -131,7 +141,7 @@ module Bibliothecary
 
         entries = ManifestEntries.new(parse_queue: manifest["components"])
 
-        entries.parse!(options.fetch(:filename, nil)) do |component, parse_queue|
+        entries.parse! do |component, parse_queue|
           parse_queue.concat(component["components"]) if component["components"]
 
           component["purl"]
@@ -154,7 +164,7 @@ module Bibliothecary
 
         entries = ManifestEntries.new(parse_queue: root.locate("components/*"))
 
-        entries.parse!(options.fetch(:filename, nil)) do |component, parse_queue|
+        entries.parse! do |component, parse_queue|
           # #locate returns an empty array if nothing is found, so we can
           # always safely concatenate it to the parse queue.
           parse_queue.concat(component.locate("components/*"))

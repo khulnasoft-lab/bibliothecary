@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Bibliothecary
   module Parsers
     class Julia
@@ -17,11 +15,10 @@ module Bibliothecary
       add_multi_parser(Bibliothecary::MultiParsers::CycloneDX)
       add_multi_parser(Bibliothecary::MultiParsers::DependenciesCSV)
 
-      def self.parse_require(file_contents, options: {})
+      def self.parse_require(file_contents, options: {}) # rubocop:disable Lint/UnusedMethodArgument
         deps = []
         file_contents.split("\n").each do |line|
           next if line.match(/^#/) || line.empty?
-
           split = line.split(/\s/)
           if line.match(/^@/)
             name = split[1]
@@ -33,12 +30,11 @@ module Bibliothecary
           reqs = "*" if reqs.empty?
           next if name.empty?
 
-          deps << Dependency.new(
+          deps << {
             name: name,
             requirement: reqs,
             type: "runtime",
-            source: options.fetch(:filename, nil)
-          )
+          }
         end
         deps
       end

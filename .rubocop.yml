@@ -1,10 +1,5 @@
 ---
 
-# Without this, CI might pickup nested dep's rubocop files in vendor/
-inherit_mode:
-  merge:
-    - Exclude
-
 AllCops:
   DisabledByDefault: true
   TargetRubyVersion: 3.0

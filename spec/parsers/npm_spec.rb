@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "spec_helper"
 
 describe Bibliothecary::Parsers::NPM do
@@ -35,19 +33,19 @@ describe Bibliothecary::Parsers::NPM do
 
   it "parses dependencies from npm-ls.json" do
     expect(described_class.analyse_contents("npm-ls.json", load_fixture("npm-ls.json"))).to eq({
-                                                                                                 platform: "npm",
-                                                                                                 path: "npm-ls.json",
-                                                                                                 dependencies: [
-        Bibliothecary::Dependency.new(name: "ansicolor", requirement: "1.1.93", type: "runtime", source: "npm-ls.json"),
-        Bibliothecary::Dependency.new(name: "babel-cli", requirement: "6.26.0", type: "runtime", source: "npm-ls.json"),
-        Bibliothecary::Dependency.new(name: "debug", requirement: "2.6.9", type: "runtime", source: "npm-ls.json"),
-        Bibliothecary::Dependency.new(name: "babel-polyfill", requirement: "6.26.0", type: "runtime", source: "npm-ls.json"),
-        Bibliothecary::Dependency.new(name: "core-js", requirement: "2.6.12", type: "runtime", source: "npm-ls.json"),
-        Bibliothecary::Dependency.new(name: "lodash", requirement: "4.17.21", type: "runtime", source: "npm-ls.json"),
+      platform: "npm",
+      path: "npm-ls.json",
+      dependencies: [
+        { lockfile_requirement: "1.1.93", name: "ansicolor", requirement: "1.1.93", type: "runtime" },
+        { lockfile_requirement: "^6.26.0", name: "babel-cli", requirement: "6.26.0", type: "runtime" },
+        { lockfile_requirement: nil,    name: "debug", requirement: "2.6.9", type: "runtime" },
+        { lockfile_requirement: "^6.26.0", name:"babel-polyfill", requirement: "6.26.0", type: "runtime" },
+        { lockfile_requirement: "2.6.12", name:"core-js", requirement: "2.6.12", type: "runtime" },
+        { lockfile_requirement: "4.17.21", name:"lodash", requirement: "4.17.21", type: "runtime" },
       ],
-                                                                                                 kind: "lockfile",
-                                                                                                 success: true,
-                                                                                               })
+      kind: "lockfile",
+      success: true,
+    })
   end
 
   it 'parses dependencies from pnpm-lock.yaml' do
@@ -72,84 +70,48 @@ describe Bibliothecary::Parsers::NPM do
 
   it "parses dependencies from package.json" do
     expect(described_class.analyse_contents("package.json", load_fixture("package.json"))).to eq({
-<<<<<<< HEAD
-                                                                                                   platform: "npm",
-                                                                                                   path: "package.json",
-                                                                                                   dependencies: [
-        Bibliothecary::Dependency.new(name: "babel", requirement: "^4.6.6", type: "runtime", local: false, source: "package.json"),
-        Bibliothecary::Dependency.new(name: "@some-scope/actual-package", requirement: "^1.1.3", original_name: "alias-package-name", original_requirement: "^1.1.3", type: "runtime", local: false, source: "package.json"),
-        Bibliothecary::Dependency.new(name: "mocha", requirement: "^2.2.1", type: "development", local: false, source: "package.json"),
-=======
       platform: "npm",
       path: "package.json",
       dependencies: [
         { name: "babel", requirement: "^4.6.6", type: "runtime", local: false },
         { name: "mocha", requirement: "^2.2.1", type: "development", local: false },
->>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
       ],
-                                                                                                   kind: "manifest",
-                                                                                                   success: true,
-                                                                                                 })
+      kind: "manifest",
+      success: true,
+    })
   end
 
   it "parses dependencies from npm-shrinkwrap.json" do
     expect(described_class.analyse_contents("npm-shrinkwrap.json", load_fixture("npm-shrinkwrap.json"))).to include({
-                                                                                                                      platform: "npm",
-                                                                                                                      path: "npm-shrinkwrap.json",
-                                                                                                                      kind: "lockfile",
-                                                                                                                      success: true,
-                                                                                                                    })
+      platform: "npm",
+      path: "npm-shrinkwrap.json",
+      kind: "lockfile",
+      success: true,
+    })
     expect(described_class.analyse_contents("npm-shrinkwrap.json", load_fixture("npm-shrinkwrap.json"))[:dependencies]).to include(
-      Bibliothecary::Dependency.new(name: "babel", requirement: "4.7.16", type: "runtime", source: "npm-shrinkwrap.json"),
-      Bibliothecary::Dependency.new(name: "body-parser", requirement: "1.13.3", type: "runtime", source: "npm-shrinkwrap.json"),
-      Bibliothecary::Dependency.new(name: "bugsnag", requirement: "1.6.5", type: "runtime", source: "npm-shrinkwrap.json"),
-      Bibliothecary::Dependency.new(name: "cookie-session", requirement: "1.2.0", type: "runtime", source: "npm-shrinkwrap.json"),
-      Bibliothecary::Dependency.new(name: "debug", requirement: "2.2.0", type: "development", source: "npm-shrinkwrap.json"),
-      Bibliothecary::Dependency.new(name: "deep-diff", requirement: "0.3.2", type: "runtime", source: "npm-shrinkwrap.json"),
-      Bibliothecary::Dependency.new(name: "deep-equal", requirement: "1.0.0", type: "runtime", source: "npm-shrinkwrap.json"),
-      Bibliothecary::Dependency.new(name: "express", requirement: "4.13.3", type: "runtime", source: "npm-shrinkwrap.json"),
-      Bibliothecary::Dependency.new(name: "express-session", requirement: "1.11.3", type: "runtime", source: "npm-shrinkwrap.json"),
-      Bibliothecary::Dependency.new(name: "jade", requirement: "1.11.0", type: "runtime", source: "npm-shrinkwrap.json"),
-      Bibliothecary::Dependency.new(name: "js-yaml", requirement: "3.4.0", type: "runtime", source: "npm-shrinkwrap.json"),
-      Bibliothecary::Dependency.new(name: "memwatch-next", requirement: "0.2.9", type: "runtime", source: "npm-shrinkwrap.json"),
-      Bibliothecary::Dependency.new(name: "multer", requirement: "0.1.8", type: "runtime", source: "npm-shrinkwrap.json"),
-      Bibliothecary::Dependency.new(name: "qs", requirement: "2.4.2", type: "runtime", source: "npm-shrinkwrap.json"),
-      Bibliothecary::Dependency.new(name: "redis", requirement: "0.12.1", type: "runtime", source: "npm-shrinkwrap.json"),
-      Bibliothecary::Dependency.new(name: "semver", requirement: "4.3.6", type: "runtime", source: "npm-shrinkwrap.json"),
-      Bibliothecary::Dependency.new(name: "serve-static", requirement: "1.10.0", type: "runtime", source: "npm-shrinkwrap.json"),
-      Bibliothecary::Dependency.new(name: "toml", requirement: "2.3.0", type: "runtime", source: "npm-shrinkwrap.json")
+      { name:"babel", requirement:"4.7.16", type:"runtime" },
+      { name:"body-parser", requirement:"1.13.3", type:"runtime" },
+      { name:"bugsnag", requirement:"1.6.5", type:"runtime" },
+      { name:"cookie-session", requirement:"1.2.0", type:"runtime" },
+      { name:"debug", requirement:"2.2.0", type:"development" },
+      { name:"deep-diff", requirement:"0.3.2", type:"runtime" },
+      { name:"deep-equal", requirement:"1.0.0", type:"runtime" },
+      { name:"express", requirement:"4.13.3", type:"runtime" },
+      { name:"express-session", requirement:"1.11.3", type:"runtime" },
+      { name:"jade", requirement:"1.11.0", type:"runtime" },
+      { name:"js-yaml", requirement:"3.4.0", type:"runtime" },
+      { name:"memwatch-next", requirement:"0.2.9", type:"runtime" },
+      { name:"multer", requirement:"0.1.8", type:"runtime" },
+      { name:"qs", requirement:"2.4.2", type:"runtime" },
+      { name:"redis", requirement:"0.12.1", type:"runtime" },
+      { name:"semver", requirement:"4.3.6", type:"runtime" },
+      { name:"serve-static", requirement:"1.10.0", type:"runtime" },
+      { name:"toml", requirement:"2.3.0", type:"runtime" }
     )
   end
 
-  it "parses dependencies from yarn.lock" do
+  it "parses dependencies from yarn.lock", :vcr do
     expect(described_class.analyse_contents("yarn.lock", load_fixture("yarn.lock"))).to eq({
-<<<<<<< HEAD
-                                                                                             platform: "npm",
-                                                                                             path: "yarn.lock",
-                                                                                             dependencies: [
-
-        Bibliothecary::Dependency.new(name: "body-parser", requirement: "1.16.1", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "bytes", requirement: "2.4.0", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "content-type", requirement: "1.0.2", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "debug", requirement: "2.6.1", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "depd", requirement: "1.1.0", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "ee-first", requirement: "1.1.1", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "http-errors", requirement: "1.5.1", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "iconv-lite", requirement: "0.4.15", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "inherits", requirement: "2.0.3", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "media-typer", requirement: "0.3.0", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "mime-db", requirement: "1.26.0", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "mime-types", requirement: "2.1.14", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "ms", requirement: "0.7.2", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "on-finished", requirement: "2.3.0", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "qs", requirement: "6.2.1", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "raw-body", requirement: "2.2.0", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "setprototypeof", requirement: "1.0.2", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "statuses", requirement: "1.3.1", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "@some-scope/actual-package", requirement: "1.1.3", original_name: "alias-package-name", original_requirement: "1.1.3", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "type-is", requirement: "1.6.14", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "unpipe", requirement: "1.0.0", type: "runtime", local: false, source: "yarn.lock"),
-=======
       platform: "npm",
       path: "yarn.lock",
       dependencies: [
@@ -173,420 +135,38 @@ describe Bibliothecary::Parsers::NPM do
         { name: "statuses", lockfile_requirement: ">= 1.3.1 < 2", requirement: "1.3.1", type: "runtime", local: false },
         { name: "type-is", lockfile_requirement: "~1.6.14", requirement: "1.6.14", type: "runtime", local: false },
         { name: "unpipe", lockfile_requirement: "1.0.0", requirement: "1.0.0", type: "runtime", local: false },
->>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
       ],
-                                                                                             kind: "lockfile",
-                                                                                             success: true,
-                                                                                           })
+      kind: "lockfile",
+      success: true,
+    })
   end
 
-  it "parses git dependencies from yarn.lock" do
+  it "parses git dependencies from yarn.lock", :vcr do
     expect(described_class.analyse_contents("yarn.lock", load_fixture("yarn-with-git-repo/yarn.lock"))).to eq({
-<<<<<<< HEAD
-                                                                                                                platform: "npm",
-                                                                                                                path: "yarn.lock",
-                                                                                                                dependencies: [
-        Bibliothecary::Dependency.new(name: "vue", requirement: "2.6.12", type: "runtime", local: false, source: "yarn.lock"),
-=======
       platform: "npm",
       path: "yarn.lock",
       dependencies: [
         { name: "vue", lockfile_requirement: "https://github.com/vuejs/vue.git#v2.6.12", requirement: "2.6.12", type: "runtime", local: false },
->>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
       ],
-                                                                                                                kind: "lockfile",
-                                                                                                                success: true,
-                                                                                                              })
-  end
-
-  it "parses dependencies from pnpm-lock.yaml with lockfile version 5" do
-    expected_deps = [
-      Bibliothecary::Dependency.new(name: "acorn-babel", requirement: "0.11.1-38", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "acorn", requirement: "5.7.4", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "amdefine", requirement: "1.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ansi-regex", requirement: "2.1.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ansi-styles", requirement: "2.2.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ast-types", requirement: "0.7.8", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ast-types", requirement: "0.8.15", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ast-types", requirement: "0.9.6", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "async-each", requirement: "0.1.6", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "babel", requirement: "4.7.16", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "balanced-match", requirement: "1.0.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "brace-expansion", requirement: "1.1.11", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "chalk", requirement: "1.1.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "chokidar", requirement: "0.12.6", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "commander", requirement: "0.6.1", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "commander", requirement: "2.20.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "commander", requirement: "2.3.0", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "commoner", requirement: "0.10.8", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "concat-map", requirement: "0.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "convert-source-map", requirement: "0.5.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "core-js", requirement: "0.6.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "core-util-is", requirement: "1.0.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "debug", requirement: "2.2.0", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "debug", requirement: "2.6.9", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "defined", requirement: "1.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "detect-indent", requirement: "3.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "detective", requirement: "4.7.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "diff", requirement: "1.4.0", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "escape-string-regexp", requirement: "1.0.2", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "escape-string-regexp", requirement: "1.0.5", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "esprima-fb", requirement: "15001.1001.0-dev-harmony-fb", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "esprima", requirement: "2.7.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "esprima", requirement: "3.1.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "estraverse", requirement: "1.9.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "esutils", requirement: "1.1.6", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "fs-readdir-recursive", requirement: "0.1.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "fsevents", requirement: "0.3.8", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "get-stdin", requirement: "4.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "glob", requirement: "3.2.11", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "glob", requirement: "5.0.15", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "globals", requirement: "6.4.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "graceful-fs", requirement: "2.0.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "graceful-fs", requirement: "4.2.11", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "growl", requirement: "1.9.2", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "has-ansi", requirement: "2.0.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "iconv-lite", requirement: "0.4.24", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "inflight", requirement: "1.0.6", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "inherits", requirement: "2.0.4", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "is-finite", requirement: "1.1.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "is-integer", requirement: "1.0.7", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "isarray", requirement: "0.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "jade", requirement: "0.26.3", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "js-tokens", requirement: "1.0.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "jsesc", requirement: "0.5.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "left-pad", requirement: "0.0.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "leven", requirement: "1.0.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "line-numbers", requirement: "0.2.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "lodash", requirement: "3.10.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "lru-cache", requirement: "2.7.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "minimatch", requirement: "0.2.14", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "minimatch", requirement: "0.3.0", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "minimatch", requirement: "3.1.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "minimist", requirement: "0.0.8", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "minimist", requirement: "1.2.8", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "mkdirp", requirement: "0.3.0", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "mkdirp", requirement: "0.5.1", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "mkdirp", requirement: "0.5.6", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "mocha", requirement: "2.5.3", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ms", requirement: "0.7.1", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ms", requirement: "2.0.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "nan", requirement: "2.22.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "object-assign", requirement: "4.1.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "once", requirement: "1.4.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "output-file-sync", requirement: "1.1.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "path-is-absolute", requirement: "1.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "private", requirement: "0.1.8", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "q", requirement: "1.5.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "readable-stream", requirement: "1.0.34", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "readdirp", requirement: "1.3.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "recast", requirement: "0.10.43", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "recast", requirement: "0.11.23", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "regenerate", requirement: "1.4.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "regenerator-babel", requirement: "0.8.13-2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "regexpu", requirement: "1.3.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "regjsgen", requirement: "0.2.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "regjsparser", requirement: "0.1.5", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "repeating", requirement: "1.1.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "safer-buffer", requirement: "2.1.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "shebang-regex", requirement: "1.0.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "sigmund", requirement: "1.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "slash", requirement: "1.0.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "source-map-support", requirement: "0.2.10", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "source-map", requirement: "0.1.32", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "source-map", requirement: "0.4.4", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "source-map", requirement: "0.5.7", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "string_decoder", requirement: "0.10.31", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "strip-ansi", requirement: "3.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "supports-color", requirement: "1.2.0", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "supports-color", requirement: "2.0.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "through", requirement: "2.3.8", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "to-fast-properties", requirement: "1.0.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "to-iso-string", requirement: "0.0.2", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "trim-right", requirement: "1.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "wrappy", requirement: "1.0.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "zod", requirement: "3.24.2", original_name: "alias-package", original_requirement: "3.24.2", type: "runtime", source: "pnpm-lock.yaml"),
-]
-    result = described_class.analyse_contents("pnpm-lock.yaml", load_fixture("pnpm-lockfile-version-5/pnpm-lock.yaml"))
-
-    expect(result).to eq({
-                           platform: "npm",
-                           path: "pnpm-lock.yaml",
-                           dependencies: expected_deps,
-                           kind: "lockfile",
-                           success: true,
-                         })
-  end
-
-  it "parses dependencies from pnpm-lock.yaml with lockfile version 6" do
-    expected_deps = [
-      Bibliothecary::Dependency.new(name: "acorn-babel", requirement: "0.11.1-38", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "acorn", requirement: "5.7.4", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "amdefine", requirement: "1.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ansi-regex", requirement: "2.1.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ansi-styles", requirement: "2.2.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ast-types", requirement: "0.7.8", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ast-types", requirement: "0.8.15", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ast-types", requirement: "0.9.6", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "async-each", requirement: "0.1.6", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "babel", requirement: "4.7.16", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "balanced-match", requirement: "1.0.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "brace-expansion", requirement: "1.1.11", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "chalk", requirement: "1.1.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "chokidar", requirement: "0.12.6", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "commander", requirement: "0.6.1", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "commander", requirement: "2.20.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "commander", requirement: "2.3.0", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "commoner", requirement: "0.10.8", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "concat-map", requirement: "0.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "convert-source-map", requirement: "0.5.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "core-js", requirement: "0.6.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "core-util-is", requirement: "1.0.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "debug", requirement: "2.2.0", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "debug", requirement: "2.6.9", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "defined", requirement: "1.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "detect-indent", requirement: "3.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "detective", requirement: "4.7.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "diff", requirement: "1.4.0", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "escape-string-regexp", requirement: "1.0.2", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "escape-string-regexp", requirement: "1.0.5", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "esprima-fb", requirement: "15001.1001.0-dev-harmony-fb", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "esprima", requirement: "2.7.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "esprima", requirement: "3.1.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "estraverse", requirement: "1.9.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "esutils", requirement: "1.1.6", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "fs-readdir-recursive", requirement: "0.1.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "fsevents", requirement: "0.3.8", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "get-stdin", requirement: "4.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "glob", requirement: "3.2.11", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "glob", requirement: "5.0.15", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "globals", requirement: "6.4.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "graceful-fs", requirement: "2.0.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "graceful-fs", requirement: "4.2.11", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "growl", requirement: "1.9.2", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "has-ansi", requirement: "2.0.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "iconv-lite", requirement: "0.4.24", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "inflight", requirement: "1.0.6", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "inherits", requirement: "2.0.4", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "is-finite", requirement: "1.1.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "is-integer", requirement: "1.0.7", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "isarray", requirement: "0.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "jade", requirement: "0.26.3", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "js-tokens", requirement: "1.0.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "jsesc", requirement: "0.5.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "left-pad", requirement: "0.0.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "leven", requirement: "1.0.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "line-numbers", requirement: "0.2.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "lodash", requirement: "3.10.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "lru-cache", requirement: "2.7.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "minimatch", requirement: "0.2.14", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "minimatch", requirement: "0.3.0", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "minimatch", requirement: "3.1.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "minimist", requirement: "0.0.8", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "minimist", requirement: "1.2.8", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "mkdirp", requirement: "0.3.0", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "mkdirp", requirement: "0.5.1", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "mkdirp", requirement: "0.5.6", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "mocha", requirement: "2.5.3", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ms", requirement: "0.7.1", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ms", requirement: "2.0.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "nan", requirement: "2.22.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "object-assign", requirement: "4.1.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "once", requirement: "1.4.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "output-file-sync", requirement: "1.1.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "path-is-absolute", requirement: "1.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "private", requirement: "0.1.8", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "q", requirement: "1.5.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "readable-stream", requirement: "1.0.34", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "readdirp", requirement: "1.3.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "recast", requirement: "0.10.43", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "recast", requirement: "0.11.23", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "regenerate", requirement: "1.4.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "regenerator-babel", requirement: "0.8.13-2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "regexpu", requirement: "1.3.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "regjsgen", requirement: "0.2.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "regjsparser", requirement: "0.1.5", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "repeating", requirement: "1.1.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "safer-buffer", requirement: "2.1.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "shebang-regex", requirement: "1.0.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "sigmund", requirement: "1.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "slash", requirement: "1.0.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "source-map-support", requirement: "0.2.10", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "source-map", requirement: "0.1.32", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "source-map", requirement: "0.4.4", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "source-map", requirement: "0.5.7", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "string_decoder", requirement: "0.10.31", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "strip-ansi", requirement: "3.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "supports-color", requirement: "1.2.0", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "supports-color", requirement: "2.0.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "through", requirement: "2.3.8", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "to-fast-properties", requirement: "1.0.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "to-iso-string", requirement: "0.0.2", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "trim-right", requirement: "1.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "wrappy", requirement: "1.0.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "zod", requirement: "3.24.2", original_name: "alias-package", original_requirement: "3.24.2", type: "runtime", source: "pnpm-lock.yaml"),
-]
-    result = described_class.analyse_contents("pnpm-lock.yaml", load_fixture("pnpm-lockfile-version-6/pnpm-lock.yaml"))
-
-    expect(result).to eq({
-                           platform: "npm",
-                           path: "pnpm-lock.yaml",
-                           dependencies: expected_deps,
-                           kind: "lockfile",
-                           success: true,
-                         })
-  end
-
-  it "parses dependencies from pnpm-lock.yaml with lockfile version 9" do
-    expected_deps = [
-      Bibliothecary::Dependency.new(name: "acorn-babel", requirement: "0.11.1-38", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "acorn", requirement: "5.7.4", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "amdefine", requirement: "1.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ansi-regex", requirement: "2.1.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ansi-styles", requirement: "2.2.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ast-types", requirement: "0.7.8", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ast-types", requirement: "0.8.15", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ast-types", requirement: "0.9.6", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "async-each", requirement: "0.1.6", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "babel", requirement: "4.7.16", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "balanced-match", requirement: "1.0.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "brace-expansion", requirement: "1.1.11", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "chalk", requirement: "1.1.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "chokidar", requirement: "0.12.6", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "commander", requirement: "0.6.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "commander", requirement: "2.20.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "commander", requirement: "2.3.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "commoner", requirement: "0.10.8", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "concat-map", requirement: "0.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "convert-source-map", requirement: "0.5.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "core-js", requirement: "0.6.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "core-util-is", requirement: "1.0.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "debug", requirement: "2.2.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "debug", requirement: "2.6.9", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "defined", requirement: "1.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "detect-indent", requirement: "3.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "detective", requirement: "4.7.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "diff", requirement: "1.4.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "escape-string-regexp", requirement: "1.0.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "escape-string-regexp", requirement: "1.0.5", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "esprima-fb", requirement: "15001.1001.0-dev-harmony-fb", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "esprima", requirement: "2.7.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "esprima", requirement: "3.1.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "estraverse", requirement: "1.9.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "esutils", requirement: "1.1.6", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "fs-readdir-recursive", requirement: "0.1.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "fsevents", requirement: "0.3.8", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "get-stdin", requirement: "4.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "glob", requirement: "3.2.11", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "glob", requirement: "5.0.15", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "globals", requirement: "6.4.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "graceful-fs", requirement: "2.0.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "graceful-fs", requirement: "4.2.11", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "growl", requirement: "1.9.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "has-ansi", requirement: "2.0.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "iconv-lite", requirement: "0.4.24", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "inflight", requirement: "1.0.6", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "inherits", requirement: "2.0.4", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "is-finite", requirement: "1.1.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "is-integer", requirement: "1.0.7", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "isarray", requirement: "0.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "jade", requirement: "0.26.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "js-tokens", requirement: "1.0.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "jsesc", requirement: "0.5.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "left-pad", requirement: "0.0.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "leven", requirement: "1.0.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "line-numbers", requirement: "0.2.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "lodash", requirement: "3.10.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "lru-cache", requirement: "2.7.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "minimatch", requirement: "0.2.14", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "minimatch", requirement: "0.3.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "minimatch", requirement: "3.1.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "minimist", requirement: "0.0.8", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "minimist", requirement: "1.2.8", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "mkdirp", requirement: "0.3.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "mkdirp", requirement: "0.5.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "mkdirp", requirement: "0.5.6", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "mocha", requirement: "2.5.3", type: "development", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ms", requirement: "0.7.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "ms", requirement: "2.0.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "nan", requirement: "2.22.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "object-assign", requirement: "4.1.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "once", requirement: "1.4.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "output-file-sync", requirement: "1.1.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "path-is-absolute", requirement: "1.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "private", requirement: "0.1.8", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "q", requirement: "1.5.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "readable-stream", requirement: "1.0.34", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "readdirp", requirement: "1.3.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "recast", requirement: "0.10.43", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "recast", requirement: "0.11.23", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "regenerate", requirement: "1.4.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "regenerator-babel", requirement: "0.8.13-2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "regexpu", requirement: "1.3.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "regjsgen", requirement: "0.2.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "regjsparser", requirement: "0.1.5", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "repeating", requirement: "1.1.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "safer-buffer", requirement: "2.1.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "shebang-regex", requirement: "1.0.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "sigmund", requirement: "1.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "slash", requirement: "1.0.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "source-map-support", requirement: "0.2.10", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "source-map", requirement: "0.1.32", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "source-map", requirement: "0.4.4", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "source-map", requirement: "0.5.7", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "string_decoder", requirement: "0.10.31", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "strip-ansi", requirement: "3.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "supports-color", requirement: "1.2.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "supports-color", requirement: "2.0.0", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "through", requirement: "2.3.8", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "to-fast-properties", requirement: "1.0.3", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "to-iso-string", requirement: "0.0.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "trim-right", requirement: "1.0.1", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "wrappy", requirement: "1.0.2", type: "runtime", source: "pnpm-lock.yaml"),
-      Bibliothecary::Dependency.new(name: "zod", requirement: "3.24.2", original_name: "alias-package", original_requirement: "3.24.2", type: "runtime", source: "pnpm-lock.yaml"),
-]
-    result = described_class.analyse_contents("pnpm-lock.yaml", load_fixture("pnpm-lockfile-version-9/pnpm-lock.yaml"))
-
-    expect(result).to eq({
-                           platform: "npm",
-                           path: "pnpm-lock.yaml",
-                           dependencies: expected_deps,
-                           kind: "lockfile",
-                           success: true,
-                         })
+      kind: "lockfile",
+      success: true,
+    })
   end
 
   it "parses git dependencies from package.json" do
     expect(described_class.analyse_contents("package.json", load_fixture("yarn-with-git-repo/package.json"))).to eq({
-<<<<<<< HEAD
-                                                                                                                      platform: "npm",
-                                                                                                                      path: "package.json",
-                                                                                                                      dependencies: [
-        Bibliothecary::Dependency.new(name: "vue", requirement: "https://github.com/vuejs/vue.git#v2.6.12", type: "runtime", local: false, source: "package.json"),
-=======
       platform: "npm",
       path: "package.json",
       dependencies: [
         { name: "vue", requirement: "https://github.com/vuejs/vue.git#v2.6.12", type: "runtime", local: false },
->>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
       ],
-                                                                                                                      kind: "manifest",
-                                                                                                                      success: true,
-                                                                                                                    })
+      kind: "manifest",
+      success: true,
+    })
   end
 
   it "wont load package-lock.json from a package.json" do
     expect(described_class.analyse_contents("package.json", load_fixture("package-lock.json"))).to match({
-<<<<<<< HEAD
-                                                                                                           platform: "npm",
-                                                                                                           path: "package.json",
-                                                                                                           dependencies: nil,
-                                                                                                           kind: "manifest",
-                                                                                                           success: false,
-                                                                                                           error_message: "package.json: appears to be a lockfile rather than manifest format",
-                                                                                                           error_location: match("in `parse_manifest'"),
-                                                                                                         })
-=======
       platform: "npm",
       path: "package.json",
       dependencies: nil,
@@ -595,285 +175,16 @@ describe Bibliothecary::Parsers::NPM do
       error_message: "package.json: appears to be a lockfile rather than manifest format",
       error_location: match("in `parse_manifest'"),
     })
->>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
   end
 
   it "parses dependencies from package-lock.json" do
     expect(described_class.analyse_contents("package-lock.json", load_fixture("package-lock.json"))).to eq({
-                                                                                                             platform: "npm",
-                                                                                                             path: "package-lock.json",
-                                                                                                             dependencies: [
-        Bibliothecary::Dependency.new(name: "accepts", requirement: "1.3.3", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "ajv", requirement: "4.11.8", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "ansi-escapes", requirement: "1.4.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "ansi-regex", requirement: "2.1.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "ansi-styles", requirement: "2.2.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "array-find-index", requirement: "1.0.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "array-flatten", requirement: "1.1.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "asn1", requirement: "0.2.3", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "assert-plus", requirement: "0.2.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "asynckit", requirement: "0.4.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "aws-sign2", requirement: "0.6.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "aws4", requirement: "1.6.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "babel-runtime", requirement: "6.23.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "balanced-match", requirement: "0.4.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "bcrypt-pbkdf", requirement: "1.0.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "bl", requirement: "1.2.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "body-parser", requirement: "1.17.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "boom", requirement: "2.10.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "brace-expansion", requirement: "1.1.7", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "browserify-zlib", requirement: "0.1.4", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "buffer-shims", requirement: "1.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "builtin-modules", requirement: "1.1.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "bytes", requirement: "2.4.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "camelcase", requirement: "4.1.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "caseless", requirement: "0.12.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "chalk", requirement: "1.1.3", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "chownr", requirement: "1.0.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "ci-info", requirement: "1.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "cli-cursor", requirement: "2.1.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "cli-width", requirement: "2.1.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "cmd-shim", requirement: "2.0.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "co", requirement: "4.6.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "combined-stream", requirement: "1.0.5", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "commander", requirement: "2.9.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "concat-map", requirement: "0.0.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "content-disposition", requirement: "0.5.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "content-type", requirement: "1.0.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "cookie", requirement: "0.3.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "cookie-signature", requirement: "1.0.6", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "core-js", requirement: "2.4.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "core-util-is", requirement: "1.0.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "cryptiles", requirement: "2.0.5", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "currently-unhandled", requirement: "0.4.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "dashdash", requirement: "1.14.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "assert-plus", requirement: "1.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "death", requirement: "1.1.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "debug", requirement: "2.6.7", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "delayed-stream", requirement: "1.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "depd", requirement: "1.1.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "destroy", requirement: "1.0.4", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "detect-indent", requirement: "5.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "duplexify", requirement: "3.5.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "ecc-jsbn", requirement: "0.1.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "ee-first", requirement: "1.1.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "encodeurl", requirement: "1.0.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "end-of-stream", requirement: "1.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "escape-html", requirement: "1.0.3", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "escape-string-regexp", requirement: "1.0.5", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "etag", requirement: "1.8.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "express", requirement: "4.15.3", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "extend", requirement: "3.0.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "external-editor", requirement: "2.0.4", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "iconv-lite", requirement: "0.4.17", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "extsprintf", requirement: "1.0.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "figures", requirement: "2.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "finalhandler", requirement: "1.0.3", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "forever-agent", requirement: "0.6.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "form-data", requirement: "2.1.4", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "forwarded", requirement: "0.1.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "fresh", requirement: "0.5.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "fs.realpath", requirement: "1.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "getpass", requirement: "0.1.7", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "assert-plus", requirement: "1.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "glob", requirement: "7.1.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "graceful-fs", requirement: "4.1.11", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "graceful-readlink", requirement: "1.0.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "gunzip-maybe", requirement: "1.4.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "har-schema", requirement: "1.0.5", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "har-validator", requirement: "4.2.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "has-ansi", requirement: "2.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "hawk", requirement: "3.1.3", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "hoek", requirement: "2.16.3", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "http-errors", requirement: "1.6.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "http-signature", requirement: "1.1.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "iconv-lite", requirement: "0.4.15", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "inflight", requirement: "1.0.6", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "inherits", requirement: "2.0.3", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "ini", requirement: "1.3.4", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "inquirer", requirement: "3.0.6", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "invariant", requirement: "2.2.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "ipaddr.js", requirement: "1.3.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "is-builtin-module", requirement: "1.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "is-ci", requirement: "1.0.10", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "is-deflate", requirement: "1.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "is-fullwidth-code-point", requirement: "2.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "is-gzip", requirement: "1.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "is-promise", requirement: "2.1.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "is-typedarray", requirement: "1.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "isarray", requirement: "1.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "isstream", requirement: "0.1.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "jodid25519", requirement: "1.0.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "js-tokens", requirement: "3.0.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "jsbn", requirement: "0.1.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "jschardet", requirement: "1.4.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "json-schema", requirement: "0.2.3", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "json-stable-stringify", requirement: "1.0.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "json-stringify-safe", requirement: "5.0.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "jsonify", requirement: "0.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "jsprim", requirement: "1.4.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "assert-plus", requirement: "1.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "leven", requirement: "2.1.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "lodash", requirement: "4.17.4", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "loose-envify", requirement: "1.3.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "loud-rejection", requirement: "1.6.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "media-typer", requirement: "0.3.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "merge-descriptors", requirement: "1.0.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "methods", requirement: "1.1.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "mime", requirement: "1.3.4", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "mime-db", requirement: "1.27.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "mime-types", requirement: "2.1.15", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "mimic-fn", requirement: "1.1.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "minimatch", requirement: "3.0.4", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "minimist", requirement: "0.0.8", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "mkdirp", requirement: "0.5.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "ms", requirement: "2.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "mute-stream", requirement: "0.0.7", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "negotiator", requirement: "0.6.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "node-emoji", requirement: "1.5.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "oauth-sign", requirement: "0.8.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "object-path", requirement: "0.11.4", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "on-finished", requirement: "2.3.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "once", requirement: "1.3.3", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "onetime", requirement: "2.0.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "os-tmpdir", requirement: "1.0.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "pako", requirement: "0.2.9", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "parseurl", requirement: "1.3.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "path-is-absolute", requirement: "1.0.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "path-to-regexp", requirement: "0.1.7", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "peek-stream", requirement: "1.1.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "performance-now", requirement: "0.2.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "process-nextick-args", requirement: "1.0.7", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "proper-lockfile", requirement: "2.0.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "proxy-addr", requirement: "1.1.4", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "pump", requirement: "1.0.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "end-of-stream", requirement: "1.4.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "once", requirement: "1.4.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "pumpify", requirement: "1.3.5", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "punycode", requirement: "1.4.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "qs", requirement: "6.4.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "range-parser", requirement: "1.2.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "raw-body", requirement: "2.2.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "read", requirement: "1.0.7", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "readable-stream", requirement: "2.2.9", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "regenerator-runtime", requirement: "0.10.5", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "request", requirement: "2.81.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "request-capture-har", requirement: "1.2.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "restore-cursor", requirement: "2.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "retry", requirement: "0.10.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "rimraf", requirement: "2.6.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "run-async", requirement: "2.3.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "rx", requirement: "4.1.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "safe-buffer", requirement: "5.0.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "semver", requirement: "5.3.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "send", requirement: "0.15.3", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "serve-static", requirement: "1.12.3", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "setprototypeof", requirement: "1.0.3", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "signal-exit", requirement: "3.0.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "sntp", requirement: "1.0.9", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "spdx-correct", requirement: "1.0.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "spdx-expression-parse", requirement: "1.0.4", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "spdx-license-ids", requirement: "1.2.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "sshpk", requirement: "1.13.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "assert-plus", requirement: "1.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "statuses", requirement: "1.3.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "stream-shift", requirement: "1.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "string_decoder", requirement: "1.0.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "string-width", requirement: "2.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "string.prototype.codepointat", requirement: "0.2.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "stringstream", requirement: "0.0.5", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "strip-ansi", requirement: "3.0.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "strip-bom", requirement: "3.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "supports-color", requirement: "2.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "tar-fs", requirement: "1.15.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "tar-stream", requirement: "1.5.4", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "through", requirement: "2.3.8", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "through2", requirement: "2.0.3", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "tmp", requirement: "0.0.31", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "tough-cookie", requirement: "2.3.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "tunnel-agent", requirement: "0.6.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "tweetnacl", requirement: "0.14.5", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "type-is", requirement: "1.6.15", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "unpipe", requirement: "1.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "util-deprecate", requirement: "1.0.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "utils-merge", requirement: "1.0.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "uuid", requirement: "3.0.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "v8-compile-cache", requirement: "1.1.0", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "validate-npm-package-license", requirement: "3.0.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "vary", requirement: "1.1.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "verror", requirement: "1.3.6", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "wrappy", requirement: "1.0.2", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "xtend", requirement: "4.0.1", type: "runtime", source: "package-lock.json"),
-        Bibliothecary::Dependency.new(name: "yarn", requirement: "0.24.6", type: "runtime", source: "package-lock.json"),
-      ],
-                                                                                                             kind: "lockfile",
-                                                                                                             success: true,
-                                                                                                           })
-  end
-
-  context "with local path dependencies" do
-    it "parses local path dependencies from package.json" do
-      expect(described_class.analyse_contents("package.json", load_fixture("npm-local-file/package.json"))).to eq({
-                                                                                                                    platform: "npm",
-                                                                                                                    path: "package.json",
-                                                                                                                    dependencies: [
-          Bibliothecary::Dependency.new(name: "left-pad", requirement: "^1.3.0", type: "runtime", local: false, source: "package.json"),
-          Bibliothecary::Dependency.new(name: "other-package", requirement: "file:src/other-package", type: "runtime", local: true, source: "package.json"),
-          Bibliothecary::Dependency.new(name: "react", requirement: "^18.3.1", type: "runtime", local: false, source: "package.json"),
-        ],
-                                                                                                                    kind: "manifest",
-                                                                                                                    success: true,
-                                                                                                                  })
-    end
-
-    it "parses local path dependencies from package-lock.json" do
-      expect(described_class.analyse_contents("package-lock.json", load_fixture("npm-local-file/package-lock.json"))).to eq({
-                                                                                                                              platform: "npm",
-                                                                                                                              path: "package-lock.json",
-                                                                                                                              dependencies: [
-          Bibliothecary::Dependency.new(name: "js-tokens", requirement: "4.0.0", type: "runtime", local: false, source: "package-lock.json"),
-          Bibliothecary::Dependency.new(name: "left-pad", requirement: "1.3.0", type: "runtime", local: false, source: "package-lock.json"),
-          Bibliothecary::Dependency.new(name: "lodash", requirement: "4.17.21", type: "development", local: false, source: "package-lock.json"),
-          Bibliothecary::Dependency.new(name: "loose-envify", requirement: "1.4.0", type: "runtime", local: false, source: "package-lock.json"),
-          Bibliothecary::Dependency.new(name: "other-package", requirement: "*", type: "runtime", local: true, source: "package-lock.json"),
-          Bibliothecary::Dependency.new(name: "react", requirement: "18.3.1", type: "runtime", local: false, source: "package-lock.json"),
-        ],
-                                                                                                                              kind: "lockfile",
-                                                                                                                              success: true,
-                                                                                                                            })
-    end
-
-    it "parses local path dependencies from yarn.lock" do
-      expect(described_class.analyse_contents("yarn.lock", load_fixture("npm-local-file/yarn.lock"))).to eq({
-                                                                                                              platform: "npm",
-                                                                                                              path: "yarn.lock",
-                                                                                                              dependencies: [
-          Bibliothecary::Dependency.new(name: "js-tokens", requirement: "4.0.0", type: "runtime", local: false, source: "yarn.lock"),
-          Bibliothecary::Dependency.new(name: "left-pad", requirement: "1.3.0", type: "runtime", local: false, source: "yarn.lock"),
-          Bibliothecary::Dependency.new(name: "loose-envify", requirement: "1.4.0", type: "runtime", local: false, source: "yarn.lock"),
-          Bibliothecary::Dependency.new(name: "other-package", requirement: "1.0.0", type: "runtime", local: true, source: "yarn.lock"),
-          Bibliothecary::Dependency.new(name: "react", requirement: "18.3.1", type: "runtime", local: false, source: "yarn.lock"),
-        ],
-                                                                                                              kind: "lockfile",
-                                                                                                              success: true,
-                                                                                                            })
-    end
-  end
-
-  it "does not parse self-referential dependencies from yarn.lock" do
-    expect(described_class.analyse_contents("yarn.lock", load_fixture("yarn-v4-lockfile/yarn.lock"))).to eq({
-                                                                                                              platform: "npm",
-                                                                                                              path: "yarn.lock",
-                                                                                                              dependencies: [
-        Bibliothecary::Dependency.new(name: "js-tokens", requirement: "4.0.0", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "left-pad", requirement: "1.3.0", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "loose-envify", requirement: "1.4.0", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "react", requirement: "18.3.1", type: "runtime", local: false, source: "yarn.lock"),
-        Bibliothecary::Dependency.new(name: "strip-ansi", requirement: "6.0.1", original_name: "strip-ansi-cjs", original_requirement: "6.0.1", type: "runtime", local: false, source: "yarn.lock"),
-      ],
-                                                                                                              kind: "lockfile",
-                                                                                                              success: true,
-                                                                                                            })
+      platform: "npm",
+      path: "package-lock.json",
+      dependencies: [{ name: "accepts", requirement: "1.3.3", type: "runtime" }, { name: "ajv", requirement: "4.11.8", type: "runtime" }, { name: "ansi-escapes", requirement: "1.4.0", type: "runtime" }, { name: "ansi-regex", requirement: "2.1.1", type: "runtime" }, { name: "ansi-styles", requirement: "2.2.1", type: "runtime" }, { name: "array-find-index", requirement: "1.0.2", type: "runtime" }, { name: "array-flatten", requirement: "1.1.1", type: "runtime" }, { name: "asn1", requirement: "0.2.3", type: "runtime" }, { name: "assert-plus", requirement: "0.2.0", type: "runtime" }, { name: "asynckit", requirement: "0.4.0", type: "runtime" }, { name: "aws-sign2", requirement: "0.6.0", type: "runtime" }, { name: "aws4", requirement: "1.6.0", type: "runtime" }, { name: "babel-runtime", requirement: "6.23.0", type: "runtime" }, { name: "balanced-match", requirement: "0.4.2", type: "runtime" }, { name: "bcrypt-pbkdf", requirement: "1.0.1", type: "runtime" }, { name: "bl", requirement: "1.2.1", type: "runtime" }, { name: "body-parser", requirement: "1.17.2", type: "runtime" }, { name: "boom", requirement: "2.10.1", type: "runtime" }, { name: "brace-expansion", requirement: "1.1.7", type: "runtime" }, { name: "browserify-zlib", requirement: "0.1.4", type: "runtime" }, { name: "buffer-shims", requirement: "1.0.0", type: "runtime" }, { name: "builtin-modules", requirement: "1.1.1", type: "runtime" }, { name: "bytes", requirement: "2.4.0", type: "runtime" }, { name: "camelcase", requirement: "4.1.0", type: "runtime" }, { name: "caseless", requirement: "0.12.0", type: "runtime" }, { name: "chalk", requirement: "1.1.3", type: "runtime" }, { name: "chownr", requirement: "1.0.1", type: "runtime" }, { name: "ci-info", requirement: "1.0.0", type: "runtime" }, { name: "cli-cursor", requirement: "2.1.0", type: "runtime" }, { name: "cli-width", requirement: "2.1.0", type: "runtime" }, { name: "cmd-shim", requirement: "2.0.2", type: "runtime" }, { name: "co", requirement: "4.6.0", type: "runtime" }, { name: "combined-stream", requirement: "1.0.5", type: "runtime" }, { name: "commander", requirement: "2.9.0", type: "runtime" }, { name: "concat-map", requirement: "0.0.1", type: "runtime" }, { name: "content-disposition", requirement: "0.5.2", type: "runtime" }, { name: "content-type", requirement: "1.0.2", type: "runtime" }, { name: "cookie", requirement: "0.3.1", type: "runtime" }, { name: "cookie-signature", requirement: "1.0.6", type: "runtime" }, { name: "core-js", requirement: "2.4.1", type: "runtime" }, { name: "core-util-is", requirement: "1.0.2", type: "runtime" }, { name: "cryptiles", requirement: "2.0.5", type: "runtime" }, { name: "currently-unhandled", requirement: "0.4.1", type: "runtime" }, { name: "dashdash", requirement: "1.14.1", type: "runtime" }, { name: "assert-plus", requirement: "1.0.0", type: "runtime" }, { name: "death", requirement: "1.1.0", type: "runtime" }, { name: "debug", requirement: "2.6.7", type: "runtime" }, { name: "delayed-stream", requirement: "1.0.0", type: "runtime" }, { name: "depd", requirement: "1.1.0", type: "runtime" }, { name: "destroy", requirement: "1.0.4", type: "runtime" }, { name: "detect-indent", requirement: "5.0.0", type: "runtime" }, { name: "duplexify", requirement: "3.5.0", type: "runtime" }, { name: "ecc-jsbn", requirement: "0.1.1", type: "runtime" }, { name: "ee-first", requirement: "1.1.1", type: "runtime" }, { name: "encodeurl", requirement: "1.0.1", type: "runtime" }, { name: "end-of-stream", requirement: "1.0.0", type: "runtime" }, { name: "escape-html", requirement: "1.0.3", type: "runtime" }, { name: "escape-string-regexp", requirement: "1.0.5", type: "runtime" }, { name: "etag", requirement: "1.8.0", type: "runtime" }, { name: "express", requirement: "4.15.3", type: "runtime" }, { name: "extend", requirement: "3.0.1", type: "runtime" }, { name: "external-editor", requirement: "2.0.4", type: "runtime" }, { name: "iconv-lite", requirement: "0.4.17", type: "runtime" }, { name: "extsprintf", requirement: "1.0.2", type: "runtime" }, { name: "figures", requirement: "2.0.0", type: "runtime" }, { name: "finalhandler", requirement: "1.0.3", type: "runtime" }, { name: "forever-agent", requirement: "0.6.1", type: "runtime" }, { name: "form-data", requirement: "2.1.4", type: "runtime" }, { name: "forwarded", requirement: "0.1.0", type: "runtime" }, { name: "fresh", requirement: "0.5.0", type: "runtime" }, { name: "fs.realpath", requirement: "1.0.0", type: "runtime" }, { name: "getpass", requirement: "0.1.7", type: "runtime" }, { name: "assert-plus", requirement: "1.0.0", type: "runtime" }, { name: "glob", requirement: "7.1.2", type: "runtime" }, { name: "graceful-fs", requirement: "4.1.11", type: "runtime" }, { name: "graceful-readlink", requirement: "1.0.1", type: "runtime" }, { name: "gunzip-maybe", requirement: "1.4.0", type: "runtime" }, { name: "har-schema", requirement: "1.0.5", type: "runtime" }, { name: "har-validator", requirement: "4.2.1", type: "runtime" }, { name: "has-ansi", requirement: "2.0.0", type: "runtime" }, { name: "hawk", requirement: "3.1.3", type: "runtime" }, { name: "hoek", requirement: "2.16.3", type: "runtime" }, { name: "http-errors", requirement: "1.6.1", type: "runtime" }, { name: "http-signature", requirement: "1.1.1", type: "runtime" }, { name: "iconv-lite", requirement: "0.4.15", type: "runtime" }, { name: "inflight", requirement: "1.0.6", type: "runtime" }, { name: "inherits", requirement: "2.0.3", type: "runtime" }, { name: "ini", requirement: "1.3.4", type: "runtime" }, { name: "inquirer", requirement: "3.0.6", type: "runtime" }, { name: "invariant", requirement: "2.2.2", type: "runtime" }, { name: "ipaddr.js", requirement: "1.3.0", type: "runtime" }, { name: "is-builtin-module", requirement: "1.0.0", type: "runtime" }, { name: "is-ci", requirement: "1.0.10", type: "runtime" }, { name: "is-deflate", requirement: "1.0.0", type: "runtime" }, { name: "is-fullwidth-code-point", requirement: "2.0.0", type: "runtime" }, { name: "is-gzip", requirement: "1.0.0", type: "runtime" }, { name: "is-promise", requirement: "2.1.0", type: "runtime" }, { name: "is-typedarray", requirement: "1.0.0", type: "runtime" }, { name: "isarray", requirement: "1.0.0", type: "runtime" }, { name: "isstream", requirement: "0.1.2", type: "runtime" }, { name: "jodid25519", requirement: "1.0.2", type: "runtime" }, { name: "js-tokens", requirement: "3.0.1", type: "runtime" }, { name: "jsbn", requirement: "0.1.1", type: "runtime" }, { name: "jschardet", requirement: "1.4.2", type: "runtime" }, { name: "json-schema", requirement: "0.2.3", type: "runtime" }, { name: "json-stable-stringify", requirement: "1.0.1", type: "runtime" }, { name: "json-stringify-safe", requirement: "5.0.1", type: "runtime" }, { name: "jsonify", requirement: "0.0.0", type: "runtime" }, { name: "jsprim", requirement: "1.4.0", type: "runtime" }, { name: "assert-plus", requirement: "1.0.0", type: "runtime" }, { name: "leven", requirement: "2.1.0", type: "runtime" }, { name: "lodash", requirement: "4.17.4", type: "runtime" }, { name: "loose-envify", requirement: "1.3.1", type: "runtime" }, { name: "loud-rejection", requirement: "1.6.0", type: "runtime" }, { name: "media-typer", requirement: "0.3.0", type: "runtime" }, { name: "merge-descriptors", requirement: "1.0.1", type: "runtime" }, { name: "methods", requirement: "1.1.2", type: "runtime" }, { name: "mime", requirement: "1.3.4", type: "runtime" }, { name: "mime-db", requirement: "1.27.0", type: "runtime" }, { name: "mime-types", requirement: "2.1.15", type: "runtime" }, { name: "mimic-fn", requirement: "1.1.0", type: "runtime" }, { name: "minimatch", requirement: "3.0.4", type: "runtime" }, { name: "minimist", requirement: "0.0.8", type: "runtime" }, { name: "mkdirp", requirement: "0.5.1", type: "runtime" }, { name: "ms", requirement: "2.0.0", type: "runtime" }, { name: "mute-stream", requirement: "0.0.7", type: "runtime" }, { name: "negotiator", requirement: "0.6.1", type: "runtime" }, { name: "node-emoji", requirement: "1.5.1", type: "runtime" }, { name: "oauth-sign", requirement: "0.8.2", type: "runtime" }, { name: "object-path", requirement: "0.11.4", type: "runtime" }, { name: "on-finished", requirement: "2.3.0", type: "runtime" }, { name: "once", requirement: "1.3.3", type: "runtime" }, { name: "onetime", requirement: "2.0.1", type: "runtime" }, { name: "os-tmpdir", requirement: "1.0.2", type: "runtime" }, { name: "pako", requirement: "0.2.9", type: "runtime" }, { name: "parseurl", requirement: "1.3.1", type: "runtime" }, { name: "path-is-absolute", requirement: "1.0.1", type: "runtime" }, { name: "path-to-regexp", requirement: "0.1.7", type: "runtime" }, { name: "peek-stream", requirement: "1.1.2", type: "runtime" }, { name: "performance-now", requirement: "0.2.0", type: "runtime" }, { name: "process-nextick-args", requirement: "1.0.7", type: "runtime" }, { name: "proper-lockfile", requirement: "2.0.1", type: "runtime" }, { name: "proxy-addr", requirement: "1.1.4", type: "runtime" }, { name: "pump", requirement: "1.0.2", type: "runtime" }, { name: "end-of-stream", requirement: "1.4.0", type: "runtime" }, { name: "once", requirement: "1.4.0", type: "runtime" }, { name: "pumpify", requirement: "1.3.5", type: "runtime" }, { name: "punycode", requirement: "1.4.1", type: "runtime" }, { name: "qs", requirement: "6.4.0", type: "runtime" }, { name: "range-parser", requirement: "1.2.0", type: "runtime" }, { name: "raw-body", requirement: "2.2.0", type: "runtime" }, { name: "read", requirement: "1.0.7", type: "runtime" }, { name: "readable-stream", requirement: "2.2.9", type: "runtime" }, { name: "regenerator-runtime", requirement: "0.10.5", type: "runtime" }, { name: "request", requirement: "2.81.0", type: "runtime" }, { name: "request-capture-har", requirement: "1.2.2", type: "runtime" }, { name: "restore-cursor", requirement: "2.0.0", type: "runtime" }, { name: "retry", requirement: "0.10.1", type: "runtime" }, { name: "rimraf", requirement: "2.6.1", type: "runtime" }, { name: "run-async", requirement: "2.3.0", type: "runtime" }, { name: "rx", requirement: "4.1.0", type: "runtime" }, { name: "safe-buffer", requirement: "5.0.1", type: "runtime" }, { name: "semver", requirement: "5.3.0", type: "runtime" }, { name: "send", requirement: "0.15.3", type: "runtime" }, { name: "serve-static", requirement: "1.12.3", type: "runtime" }, { name: "setprototypeof", requirement: "1.0.3", type: "runtime" }, { name: "signal-exit", requirement: "3.0.2", type: "runtime" }, { name: "sntp", requirement: "1.0.9", type: "runtime" }, { name: "spdx-correct", requirement: "1.0.2", type: "runtime" }, { name: "spdx-expression-parse", requirement: "1.0.4", type: "runtime" }, { name: "spdx-license-ids", requirement: "1.2.2", type: "runtime" }, { name: "sshpk", requirement: "1.13.0", type: "runtime" }, { name: "assert-plus", requirement: "1.0.0", type: "runtime" }, { name: "statuses", requirement: "1.3.1", type: "runtime" }, { name: "stream-shift", requirement: "1.0.0", type: "runtime" }, { name: "string_decoder", requirement: "1.0.1", type: "runtime" }, { name: "string-width", requirement: "2.0.0", type: "runtime" }, { name: "string.prototype.codepointat", requirement: "0.2.0", type: "runtime" }, { name: "stringstream", requirement: "0.0.5", type: "runtime" }, { name: "strip-ansi", requirement: "3.0.1", type: "runtime" }, { name: "strip-bom", requirement: "3.0.0", type: "runtime" }, { name: "supports-color", requirement: "2.0.0", type: "runtime" }, { name: "tar-fs", requirement: "1.15.2", type: "runtime" }, { name: "tar-stream", requirement: "1.5.4", type: "runtime" }, { name: "through", requirement: "2.3.8", type: "runtime" }, { name: "through2", requirement: "2.0.3", type: "runtime" }, { name: "tmp", requirement: "0.0.31", type: "runtime" }, { name: "tough-cookie", requirement: "2.3.2", type: "runtime" }, { name: "tunnel-agent", requirement: "0.6.0", type: "runtime" }, { name: "tweetnacl", requirement: "0.14.5", type: "runtime" }, { name: "type-is", requirement: "1.6.15", type: "runtime" }, { name: "unpipe", requirement: "1.0.0", type: "runtime" }, { name: "util-deprecate", requirement: "1.0.2", type: "runtime" }, { name: "utils-merge", requirement: "1.0.0", type: "runtime" }, { name: "uuid", requirement: "3.0.1", type: "runtime" }, { name: "v8-compile-cache", requirement: "1.1.0", type: "runtime" }, { name: "validate-npm-package-license", requirement: "3.0.1", type: "runtime" }, { name: "vary", requirement: "1.1.1", type: "runtime" }, { name: "verror", requirement: "1.3.6", type: "runtime" }, { name: "wrappy", requirement: "1.0.2", type: "runtime" }, { name: "xtend", requirement: "4.0.1", type: "runtime" }, { name: "yarn", requirement: "0.24.6", type: "runtime" }],
+      kind: "lockfile",
+      success: true,
+    })
   end
 
   context "with local path dependencies" do
@@ -928,57 +239,56 @@ describe Bibliothecary::Parsers::NPM do
   it "parses package-lock.json with scm based versions" do
     contents = JSON.dump(
       {
-        name: "js-app",
-        version: "1.0.0",
-        lockfileVersion: 1,
-        requires: true,
-        dependencies: {
-          tagged: {
-            version: "git+ssh://git@github.com/some-co/tagged.git#7404d32056c7f0250aa27e038136011b",
-            from: "git+ssh://git@github.com/some-co/tagged.git#v2.10.0",
+        "name": "js-app",
+        "version": "1.0.0",
+        "lockfileVersion": 1,
+        "requires": true,
+        "dependencies": {
+          "tagged": {
+            "version": "git+ssh://git@github.com/some-co/tagged.git#7404d32056c7f0250aa27e038136011b",
+            "from": "git+ssh://git@github.com/some-co/tagged.git#v2.10.0",
           },
-          semver: {
-            version: "git+ssh://git@github.com/some-co/semver.git#b8979ec5e34d5fac0f0b3b660dc67f2e",
-            from: "git+ssh://git@github.com/some-co/semver.git#semver:v5.5.5",
+          "semver": {
+            "version": "git+ssh://git@github.com/some-co/semver.git#b8979ec5e34d5fac0f0b3b660dc67f2e",
+            "from": "git+ssh://git@github.com/some-co/semver.git#semver:v5.5.5",
           },
-          head: {
-            version: "git+ssh://git@github.com/some-co/head.git#ecce958093a5451452ee1dd0c0d723c9",
-            from: "git+ssh://git@github.com/some-co/semver.git",
+          "head": {
+            "version": "git+ssh://git@github.com/some-co/head.git#ecce958093a5451452ee1dd0c0d723c9",
+            "from": "git+ssh://git@github.com/some-co/semver.git",
           },
         },
       }
     )
 
     expect(described_class.analyse_contents("package-lock.json", contents)[:dependencies]).to eq([
-      Bibliothecary::Dependency.new(name: "tagged", requirement: "2.10.0", type: "runtime", source: "package-lock.json"),
-      Bibliothecary::Dependency.new(name: "semver", requirement: "5.5.5", type: "runtime", source: "package-lock.json"),
-      Bibliothecary::Dependency.new(name: "head", requirement: "ecce958093a5451452ee1dd0c0d723c9", type: "runtime", source: "package-lock.json"),
+      { name: "tagged", requirement: "2.10.0", type: "runtime" },
+      { name: "semver", requirement: "5.5.5", type: "runtime" },
+      { name: "head", requirement: "ecce958093a5451452ee1dd0c0d723c9", type: "runtime" },
     ])
   end
 
   it "parses newer package-lock.json with dev and integrity fields" do
     analysis = described_class.analyse_contents("2018-package-lock/package-lock.json", load_fixture("2018-package-lock/package-lock.json"))
-    expect(analysis.except(:dependencies)).to eq({
-                                                   platform: "npm",
-                                                   path: "2018-package-lock/package-lock.json",
-                                                   kind: "lockfile",
-                                                   success: true,
-                                                 })
+    expect(analysis.select { |k,_v| k != :dependencies }).to eq({
+      platform: "npm",
+      path: "2018-package-lock/package-lock.json",
+      kind: "lockfile",
+      success: true,
+    })
 
     # spot-check dependencies to avoid having them all inline here.
     # Mostly for this "2018" lock file we want to be sure dev=true becomes
     # type=development
     dependencies = analysis[:dependencies]
-    expect(dependencies[0]).to eq(Bibliothecary::Dependency.new(
+    expect(dependencies[0]).to eq({
                                     name: "@vue/test-utils",
                                     requirement: "1.0.0-beta.13",
                                     type: "runtime",
-                                    source: "2018-package-lock/package-lock.json"
-                                  ))
-    expect(dependencies.select { |dep| dep.type == "runtime" }.length).to eq(373)
-    expect(dependencies.select { |dep| dep.type == "development" }.length).to eq(1601)
+                                  })
+    expect(dependencies.select { |dep| dep[:type] == "runtime" }.length).to eq(373)
+    expect(dependencies.select { |dep| dep[:type] == "development" }.length).to eq(1601)
     # a nested dependency
-    expect(dependencies).to include(Bibliothecary::Dependency.new(name: "acorn", requirement: "4.0.13", type: "development", source: "2018-package-lock/package-lock.json"))
+    expect(dependencies).to include({ name: "acorn", requirement: "4.0.13", type: "development" })
   end
 
   it 'matches valid manifest filepaths' do
@@ -1002,18 +312,6 @@ describe Bibliothecary::Parsers::NPM do
 
   it "parses dependencies that have multiple versions in package-lock.json" do
     expect(described_class.analyse_contents("package-lock.json", load_fixture("multiple_versions/package-lock.json"))).to eq({
-<<<<<<< HEAD
-                                                                                                                               dependencies: [
-                                                                                                                                 Bibliothecary::Dependency.new(name: "find-versions", requirement: "4.0.0", type: "runtime", local: false, source: "package-lock.json"),
-                                                                                                                                 Bibliothecary::Dependency.new(name: "semver-regex", requirement: "3.1.3", type: "runtime", local: false, source: "package-lock.json"),
-                                                                                                                                 Bibliothecary::Dependency.new(name: "semver-regex", requirement: "4.0.2", type: "runtime", local: false, source: "package-lock.json"),
-                                                                                                                               ],
-                                                                                                                               kind: "lockfile",
-                                                                                                                               path: "package-lock.json",
-                                                                                                                               platform: "npm",
-                                                                                                                               success: true,
-                                                                                                                             })
-=======
       dependencies: [
         { name: "find-versions", requirement: "4.0.0", type: "runtime", local: false },
         { name: "semver-regex", requirement: "3.1.3", type: "runtime", local: false },
@@ -1024,23 +322,10 @@ describe Bibliothecary::Parsers::NPM do
       platform: "npm",
       success: true,
     })
->>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
   end
 
-  it "parses dependencies that have multiple versions in yarn.json" do
+  it "parses dependencies that have multiple versions in yarn.json", :vcr do
     expect(described_class.analyse_contents("yarn.lock", load_fixture("multiple_versions/yarn.lock"))).to eq({
-<<<<<<< HEAD
-                                                                                                               dependencies: [
-                                                                                                                 Bibliothecary::Dependency.new(name: "find-versions", requirement: "4.0.0", type: "runtime", local: false, source: "yarn.lock"),
-                                                                                                                 Bibliothecary::Dependency.new(name: "semver-regex", requirement: "3.1.3", type: "runtime", local: false, source: "yarn.lock"),
-                                                                                                                 Bibliothecary::Dependency.new(name: "semver-regex", requirement: "4.0.2", type: "runtime", local: false, source: "yarn.lock"),
-                                                                                                               ],
-                                                                                                               kind: "lockfile",
-                                                                                                               path: "yarn.lock",
-                                                                                                               platform: "npm",
-                                                                                                               success: true,
-                                                                                                             })
-=======
       dependencies: [
         { lockfile_requirement: "4.0.0", name: "find-versions", requirement: "4.0.0", type: "runtime", local: false },
         { lockfile_requirement: "^3.1.2", name: "semver-regex", requirement: "3.1.3", type: "runtime", local: false },
@@ -1051,7 +336,6 @@ describe Bibliothecary::Parsers::NPM do
       platform: "npm",
       success: true,
     })
->>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
   end
 
   describe ".lockfile_preference_order" do
@@ -1062,13 +346,13 @@ describe Bibliothecary::Parsers::NPM do
     it "prefers npm-shrinkwrap file infos first" do
       expect(described_class.lockfile_preference_order([
         package, package_lock, shrinkwrap
-      ])).to eq([shrinkwrap, package, package_lock])
+      ])).to eq([ shrinkwrap, package, package_lock ])
     end
 
     it "changes nothing if no shrinkwrap" do
       expect(described_class.lockfile_preference_order([
         package, package_lock
-      ])).to eq([package, package_lock])
+      ])).to eq([ package, package_lock ])
     end
   end
 
@@ -1076,88 +360,34 @@ describe Bibliothecary::Parsers::NPM do
     it "parses version 1 package-lock.json" do
       analysis = described_class.analyse_contents("npm-lockfile-version-1/package-lock.json", load_fixture("npm-lockfile-version-1/package-lock.json"))
       expect(analysis).to eq({
-                               platform: "npm",
-                               path: "npm-lockfile-version-1/package-lock.json",
-                               dependencies: [
-          Bibliothecary::Dependency.new(name: "find-versions", requirement: "4.0.0", type: "runtime", source: "npm-lockfile-version-1/package-lock.json"),
-          Bibliothecary::Dependency.new(name: "semver-regex", requirement: "3.1.4", type: "runtime", source: "npm-lockfile-version-1/package-lock.json"),
-          Bibliothecary::Dependency.new(name: "semver-regex", requirement: "4.0.5", type: "runtime", source: "npm-lockfile-version-1/package-lock.json"),
-        ],
-                               kind: "lockfile",
-                               success: true,
-                             })
+        platform: "npm",
+        path: "npm-lockfile-version-1/package-lock.json",
+        dependencies: [{ name: "find-versions", requirement: "4.0.0", type: "runtime" }, { name: "semver-regex", requirement: "3.1.4", type: "runtime" }, { name: "semver-regex", requirement: "4.0.5", type: "runtime" }],
+        kind: "lockfile",
+        success: true,
+      })
     end
 
     it "parses version 2 package-lock.json" do
       analysis = described_class.analyse_contents("npm-lockfile-version-2/package-lock.json", load_fixture("npm-lockfile-version-2/package-lock.json"))
       expect(analysis).to eq({
-<<<<<<< HEAD
-                               platform: "npm",
-                               path: "npm-lockfile-version-2/package-lock.json",
-                               dependencies: [
-          Bibliothecary::Dependency.new(name: "find-versions", requirement: "4.0.0", type: "runtime", local: false, source: "npm-lockfile-version-2/package-lock.json"),
-          Bibliothecary::Dependency.new(name: "semver-regex", requirement: "3.1.4", type: "runtime", local: false, source: "npm-lockfile-version-2/package-lock.json"),
-          Bibliothecary::Dependency.new(name: "semver-regex", requirement: "4.0.5", type: "runtime", local: false, source: "npm-lockfile-version-2/package-lock.json"),
-],
-                               kind: "lockfile",
-                               success: true,
-                             })
-=======
         platform: "npm",
         path: "npm-lockfile-version-2/package-lock.json",
         dependencies: [{ name: "find-versions", requirement: "4.0.0", type: "runtime", local: false }, { name: "semver-regex", requirement: "3.1.4", type: "runtime", local: false }, { name: "semver-regex", requirement: "4.0.5", type: "runtime", local: false }],
         kind: "lockfile",
         success: true,
       })
->>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
     end
 
     it "parses version 3 package-lock.json" do
       analysis = described_class.analyse_contents("npm-lockfile-version-3/package-lock.json", load_fixture("npm-lockfile-version-3/package-lock.json"))
       expect(analysis).to eq({
-<<<<<<< HEAD
-                               platform: "npm",
-                               path: "npm-lockfile-version-3/package-lock.json",
-                               dependencies: [
-          Bibliothecary::Dependency.new(name: "@some-scope/actual-package", requirement: "1.1.3", original_name: "alias-package-name", original_requirement: "1.1.3", type: "runtime", local: false, source: "npm-lockfile-version-3/package-lock.json"),
-          Bibliothecary::Dependency.new(name: "find-versions", requirement: "4.0.0", type: "runtime", local: false, source: "npm-lockfile-version-3/package-lock.json"),
-          Bibliothecary::Dependency.new(name: "semver-regex", requirement: "3.1.4", type: "runtime", local: false, source: "npm-lockfile-version-3/package-lock.json"),
-          Bibliothecary::Dependency.new(name: "semver-regex", requirement: "4.0.5", type: "runtime", local: false, source: "npm-lockfile-version-3/package-lock.json"),
-],
-                               kind: "lockfile",
-                               success: true,
-                             })
-=======
         platform: "npm",
         path: "npm-lockfile-version-3/package-lock.json",
         dependencies: [{ name: "find-versions", requirement: "4.0.0", type: "runtime", local: false }, { name: "semver-regex", requirement: "3.1.4", type: "runtime", local: false }, { name: "semver-regex", requirement: "4.0.5", type: "runtime", local: false }],
         kind: "lockfile",
         success: true,
       })
->>>>>>> a753627ea69c7e6773d207413a77507bab9ee754
     end
-  end
-
-  it "parses bun.lock dependency file" do
-    expect(described_class.analyse_contents("bun.lock", load_fixture("bun.lock"))).to eq({
-                                                                                           platform: "npm",
-                                                                                           path: "bun.lock",
-                                                                                           dependencies: [
-
-       Bibliothecary::Dependency.new(name: "@types/bun", requirement: "1.2.5", type: "development", local: false, source: "bun.lock"),
-       Bibliothecary::Dependency.new(name: "@types/node", requirement: "22.13.10", type: "runtime", local: false, source: "bun.lock"),
-       Bibliothecary::Dependency.new(name: "@types/ws", requirement: "8.5.14", type: "runtime", local: false, source: "bun.lock"),
-       Bibliothecary::Dependency.new(name: "zod", requirement: "3.24.2", original_name: "alias-package", original_requirement: "3.24.2", type: "runtime", local: false, source: "bun.lock"),
-       Bibliothecary::Dependency.new(name: "babel", requirement: "6.23.0", type: "runtime", local: false, source: "bun.lock"),
-       Bibliothecary::Dependency.new(name: "bun-types", requirement: "1.2.5", type: "runtime", local: false, source: "bun.lock"),
-       Bibliothecary::Dependency.new(name: "isarray", requirement: "file:../isarray", type: "runtime", local: true, source: "bun.lock"),
-       Bibliothecary::Dependency.new(name: "lodash", requirement: "4.17.21", type: "runtime", local: false, source: "bun.lock"),
-       Bibliothecary::Dependency.new(name: "prettier", requirement: "3.5.3", type: "development", local: false, source: "bun.lock"),
-       Bibliothecary::Dependency.new(name: "typescript", requirement: "5.8.2", type: "runtime", local: false, source: "bun.lock"),
-       Bibliothecary::Dependency.new(name: "undici-types", requirement: "6.20.0", type: "runtime", local: false, source: "bun.lock"),
-     ],
-                                                                                           kind: "lockfile",
-                                                                                           success: true,
-                                                                                         })
   end
 end

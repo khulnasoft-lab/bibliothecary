@@ -125,6 +125,12 @@ describe Bibliothecary do
         related_paths: [],
         success: true,
         kind: "manifest" },
+        { platform: "actions",
+        path: ".github/workflows/upgrade-ruby.yml",
+        dependencies: [],
+        related_paths: [],
+        success: true,
+        kind: "manifest" },
         { platform: "rubygems",
         path: "Gemfile",
         dependencies: [],
@@ -441,7 +447,7 @@ describe Bibliothecary do
     end
 
     files = Bibliothecary.load_file_list(".")
-    expect(files.select {|item| item.end_with?("spec/fixtures/package.json") }).to eq []
+    expect(files.select {|item| item.end_with?("spec/fixtures/package.json") }).to eq([])
 
     Bibliothecary.reset
   end
